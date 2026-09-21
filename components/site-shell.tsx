@@ -14,7 +14,7 @@ export function SiteShell({ children, about = false }: { children: React.ReactNo
       </Link>
       <nav className="main-nav" aria-label="Main navigation">
         <Link href="/" className="nav-link" aria-current={!about ? "page" : undefined}>Home</Link>
-        <Link href="/about" className="nav-about" aria-current={about ? "page" : undefined}>About the lab <Arrow diagonal /></Link>
+        <Link href="/about" className="nav-link" aria-current={about ? "page" : undefined}>About</Link>
       </nav>
     </header>
     {children}
