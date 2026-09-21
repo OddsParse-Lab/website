@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-The landing page is `/`. `/about` is an intentional placeholder pending its design.
+The landing page is `/`. `/projects` contains the interactive project explorer; `/about` presents the lab's mission, approach, vision, objectives, and contact information.
 
 ## Production
 

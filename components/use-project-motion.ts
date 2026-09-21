@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 const THRESHOLD = 120;
-const GESTURE_PAUSE = 180;
+const RETURN_DELAY = 80;
 
 export function useProjectMotion(count: number) {
   const [selected, setSelected] = useState(0);
@@ -20,8 +20,7 @@ export function useProjectMotion(count: number) {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let current = selectedRef.current;
     let distance = 0;
-    let lastWheel = -Infinity;
-    let handled = false;
+    let queuedDistance = 0;
     let switching = false;
     let animation: Animation | null = null;
     let releaseTimer = 0;
@@ -56,7 +55,9 @@ export function useProjectMotion(count: number) {
 
     function settle() {
       window.clearTimeout(releaseTimer);
+      releaseTimer = 0;
       distance = 0;
+      queuedDistance = 0;
       if (switching) return;
       freeze();
       if (motion.matches) { paint(); return; }
@@ -73,7 +74,7 @@ export function useProjectMotion(count: number) {
       window.clearTimeout(releaseTimer);
       freeze();
       distance = 0;
-      handled = true;
+      queuedDistance = 0;
       if (motion.matches) {
         current = next;
         selectedRef.current = next;
@@ -102,6 +103,9 @@ export function useProjectMotion(count: number) {
               paint();
               switching = false;
               if (moveFocus) stage!.querySelector<HTMLElement>('[role="tabpanel"]:not([hidden])')?.focus({ preventScroll: true });
+              const pending = queuedDistance;
+              queuedDistance = 0;
+              if (pending) drag(pending);
             });
           });
         });
@@ -110,7 +114,11 @@ export function useProjectMotion(count: number) {
     selectRef.current = selectProject;
 
     function drag(delta: number) {
-      if (switching || handled) return;
+      if (switching) {
+        // Carry ongoing input into the next card, but never build a long queue.
+        queuedDistance = Math.max(-THRESHOLD, Math.min(THRESHOLD, queuedDistance + delta));
+        return;
+      }
       freeze();
       distance += delta;
       const direction = Math.sign(distance);
@@ -129,17 +137,12 @@ export function useProjectMotion(count: number) {
     function onWheel(event: WheelEvent) {
       if (event.ctrlKey || event.metaKey || Math.abs(event.deltaX) > Math.abs(event.deltaY) || !event.deltaY || !canCapture()) return;
       event.preventDefault();
-      const now = performance.now();
-      if (now - lastWheel > GESTURE_PAUSE && !switching) {
-        distance = 0;
-        handled = false;
-      }
-      lastWheel = now;
       const pixels = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1);
       // A large mouse-wheel notch should still show the pull before committing.
       drag(Math.max(-65, Math.min(65, pixels)));
       window.clearTimeout(releaseTimer);
-      if (!switching) releaseTimer = window.setTimeout(settle, GESTURE_PAUSE);
+      // This timer only returns a partial drag; it never unlocks navigation.
+      releaseTimer = window.setTimeout(settle, RETURN_DELAY);
     }
 
     let touch: { x: number; y: number; lastY: number } | null = null;
@@ -148,7 +151,7 @@ export function useProjectMotion(count: number) {
       if (event.touches.length !== 1 || switching || !canCapture()) return;
       window.clearTimeout(releaseTimer);
       distance = 0;
-      handled = false;
+      queuedDistance = 0;
       const point = event.touches[0];
       touch = { x: point.clientX, y: point.clientY, lastY: point.clientY };
     }
@@ -161,7 +164,7 @@ export function useProjectMotion(count: number) {
       drag(touch.lastY - point.clientY);
       touch.lastY = point.clientY;
     }
-    function onTouchEnd() { touch = null; if (!switching) settle(); }
+    function onTouchEnd() { touch = null; settle(); }
 
     window.addEventListener("wheel", onWheel, { passive: false });
     explorer.addEventListener("touchstart", onTouchStart, { passive: true });
