@@ -6,7 +6,8 @@
     "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
     "typecheck": "tsc --noEmit",
-    "test": "node --test tests/*.test.cjs"
+    "test": "node --test tests/*.test.cjs",
+    "test:seo": "node scripts/check-seo.cjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

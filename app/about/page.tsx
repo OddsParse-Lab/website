@@ -1,13 +1,13 @@
-import type { Metadata } from "next";
 import { SiteShell } from "@/components/site-shell";
+import { StructuredData } from "@/components/structured-data";
+import { pageMetadata, pageSchema } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "About",
-  description: "The thinking behind OddsParse Lab: independent market research, models built in-house, and a commitment to testing ideas against evidence.",
-};
+const description = "Meet OddsParse Lab, an independent quantitative research and trading lab. Discover our mission, proprietary modeling approach, and focus on evidence and risk.";
+export const metadata = pageMetadata("About - Quantitative Research & Trading", description, "/about/");
 
 export default function About() {
   return <SiteShell activePage="about">
+    <StructuredData data={pageSchema("AboutPage", "About", description, "/about/")} />
     <main id="main" className="about-editorial">
       <div className="about-opening">
         <div className="about-statement">

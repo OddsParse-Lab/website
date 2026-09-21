@@ -2,13 +2,7 @@
 
 import { useRef, type KeyboardEvent } from "react";
 import { useProjectMotion } from "./use-project-motion";
-
-const projects = [
-  { name: "Echo", category: "Prediction models", domain: "Prediction markets", description: "An in-house model for prediction markets. The approach stays private while development continues." },
-  { name: "Heimdall", category: "Market intelligence", domain: "News & language models", description: "Monitoring market news and using LLMs to understand what matters, how fresh it is, and whether it is already priced in." },
-  { name: "Torsion", category: "Intraday strategies", domain: "US equities", description: "Our own intraday model and strategy, designed in-house and inspired by opening-range breakout and rubber-band concepts." },
-  { name: "Parallax", category: "Automated arbitrage", domain: "Kalshi · Limitless", description: "Risk-free arbitrage between Kalshi and Limitless, powered by proprietary semantic market matching and fully automated trading." },
-] as const;
+import { projects } from "@/lib/projects";
 
 function ProjectDetails({ selected }: { selected: number }) {
   if (selected === 0) return <>
@@ -49,7 +43,6 @@ function ProjectDetails({ selected }: { selected: number }) {
 export function ProjectExplorer() {
   const { selected, stageRef, explorerRef, selectProject } = useProjectMotion(projects.length);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
-  const project = projects[selected];
 
   function navigate(event: KeyboardEvent<HTMLButtonElement>) {
     let next = selected;
@@ -74,12 +67,10 @@ export function ProjectExplorer() {
     </div>
     <div className="project-stage" ref={stageRef}>
     {projects.map((item, index) => <section key={item.name} id={`project-panel-${index}`} role="tabpanel" aria-labelledby={`project-tab-${index}`} tabIndex={0} hidden={selected !== index} className="project-panel">
-      {selected === index && <>
-        <div className="project-panel-top"><span>{project.domain}</span><span className="project-counter">0{selected + 1} / 04</span></div>
-        <div className="project-heading"><h2>{project.name}</h2>{selected === 0 && <span className="development-badge">In development</span>}</div>
-        <p className="project-description">{project.description}</p>
-        <ProjectDetails selected={selected} />
-      </>}
+        <div className="project-panel-top"><span>{item.domain}</span><span className="project-counter">0{index + 1} / 04</span></div>
+        <div className="project-heading"><h2>{item.name}</h2>{index === 0 && <span className="development-badge">In development</span>}</div>
+        <p className="project-description">{item.description}</p>
+        <ProjectDetails selected={index} />
     </section>)}
     </div>
   </main>;
