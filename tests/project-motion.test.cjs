@@ -11,7 +11,7 @@ const compiled = ts.transpileModule(source, {
 }).outputText;
 
 // Run the real hook with a deterministic clock and browser animation lifecycle.
-function setup({ reducedMotion = false } = {}) {
+function setup({ reducedMotion = false, count = 4 } = {}) {
   let now = 0, nextId = 0, selected = 0, cleanup, nullRefs = 0;
   const tasks = new Map();
   const animations = [];
@@ -70,7 +70,7 @@ function setup({ reducedMotion = false } = {}) {
     cancelAnimationFrame: id => tasks.delete(id),
   };
   vm.runInNewContext(compiled, context);
-  const hook = context.exports.useProjectMotion(4);
+  const hook = context.exports.useProjectMotion(count);
   function wheel(deltaY, extra = {}) {
     let prevented = false;
     listeners.get('wheel')({ deltaY, deltaX: 0, deltaMode: 0, preventDefault: () => { prevented = true; }, ...extra });
@@ -146,5 +146,15 @@ test('reduced motion supports continuous navigation, while zoom and overflow kee
   app.document.documentElement.scrollHeight = 1200;
   assert.equal(app.wheel(-60), false);
   assert.equal(app.selected(), 3);
+  app.cleanup();
+});
+
+
+test('five projects remain reachable with continuous scrolling in both directions', () => {
+  const app = setup({ count: 5 });
+  app.scroll(60, 3200);
+  assert.equal(app.selected(), 4);
+  app.scroll(-60, 3200);
+  assert.equal(app.selected(), 0);
   app.cleanup();
 });

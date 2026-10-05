@@ -4,17 +4,30 @@ import { useRef, type KeyboardEvent } from "react";
 import { useProjectMotion } from "./use-project-motion";
 import { projects } from "@/lib/projects";
 
-function ProjectDetails({ selected }: { selected: number }) {
-  if (selected === 0) return <>
+function ProjectDetails({ name }: { name: (typeof projects)[number]["name"] }) {
+  if (name === "Chronallax") return <>
+    <div className="chronallax-result">
+      <strong className="result-label daily-return-label">Current daily return</strong>
+      <p className="result-number"><span className="result-approx">≈</span>21.36<span>%</span></p>
+    </div>
+    <dl className="chronallax-metrics">
+      <div><dt>Decision latency · p50</dt><dd>47.6 <span>μs</span></dd></div>
+      <div><dt>End-to-end order latency · p50</dt><dd>3.4 <span>ms</span></dd></div>
+      <div><dt>Markets monitored in parallel</dt><dd>36,934</dd></div>
+    </dl>
+    <div className="project-note"><p>Live performance data will be published here.</p></div>
+  </>;
+
+  if (name === "Echo") return <>
     <div className="echo-result">
       <span className="result-label">Highest win rate</span>
       <p className="result-number">94.1<span>%</span></p>
       <span className="result-caption">Development-stage result</span>
     </div>
-    <div className="project-note"><p>Live performance data will be published here.<br /><span>Still in development. Stay tuned.</span></p></div>
+    <div className="project-note"><p><span>Still in development. Stay tuned.</span></p></div>
   </>;
 
-  if (selected === 1) return <>
+  if (name === "Heimdall") return <>
     <div className="source-list" aria-label="Monitored sources"><span>Google News</span><span>Yahoo Finance</span><span>X</span><span>Reddit</span><span>+ more</span></div>
     <ol className="research-steps">
       <li><span className="step-number">01</span><div><h3>Collect</h3><p>Scheduled collection from news and social sources.</p></div></li>
@@ -23,7 +36,7 @@ function ProjectDetails({ selected }: { selected: number }) {
     </ol>
   </>;
 
-  if (selected === 2) return <>
+  if (name === "Torsion") return <>
     <div className="strategy-results">
       <div><span className="result-label">Combined annualized return</span><p className="result-number">30<span>+%</span></p></div>
       <div><span className="result-label">Maximum drawdown</span><p className="result-number"><span className="result-approx">≈</span>17<span>%</span></p></div>
@@ -67,10 +80,10 @@ export function ProjectExplorer() {
     </div>
     <div className="project-stage" ref={stageRef}>
     {projects.map((item, index) => <section key={item.name} id={`project-panel-${index}`} role="tabpanel" aria-labelledby={`project-tab-${index}`} tabIndex={0} hidden={selected !== index} className="project-panel">
-        <div className="project-panel-top"><span>{item.domain}</span><span className="project-counter">0{index + 1} / 04</span></div>
-        <div className="project-heading"><h2>{item.name}</h2>{index === 0 && <span className="development-badge">In development</span>}</div>
+        <div className="project-panel-top"><span>{item.domain}</span><span className="project-counter">{String(index + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}</span></div>
+        <div className="project-heading"><h2>{item.name}</h2>{item.name === "Echo" && <span className="development-badge">In development</span>}</div>
         <p className="project-description">{item.description}</p>
-        <ProjectDetails selected={index} />
+        <ProjectDetails name={item.name} />
     </section>)}
     </div>
   </main>;
