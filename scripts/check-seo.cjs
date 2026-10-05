@@ -65,7 +65,7 @@ for (const route of routes) {
       assert.equal(panel.includes('class="development-badge"'), name === 'Echo');
       if (name === 'Chronallax') {
         assert.match(panel, /<strong[^>]*>Current daily return<\/strong>/);
-        for (const metric of ['21.36', '47.6', '3.4', '36,934', 'p50']) assert.ok(panel.includes(metric));
+        for (const metric of ['21.36', '39.3', '3.4', '36,934', 'p50']) assert.ok(panel.includes(metric));
       }
       assert.ok(panel.includes(details[index]), `${name}: full detail must be in exported HTML`);
       assert.equal(/\bhidden=""/.test(panel), index !== 0, `${name}: preserve initial tab visibility`);

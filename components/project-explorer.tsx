@@ -11,7 +11,7 @@ function ProjectDetails({ name }: { name: (typeof projects)[number]["name"] }) {
       <p className="result-number"><span className="result-approx">≈</span>21.36<span>%</span></p>
     </div>
     <dl className="chronallax-metrics">
-      <div><dt>Decision latency · p50</dt><dd>47.6 <span>μs</span></dd></div>
+      <div><dt>Decision latency · p50</dt><dd>39.3 <span>μs</span></dd></div>
       <div><dt>End-to-end order latency · p50</dt><dd>3.4 <span>ms</span></dd></div>
       <div><dt>Markets monitored in parallel</dt><dd>36,934</dd></div>
     </dl>
