@@ -3,20 +3,10 @@
 import { useRef, type KeyboardEvent } from "react";
 import { useProjectMotion } from "./use-project-motion";
 import { projects } from "@/lib/projects";
+import { ChronallaxPerformance } from "./chronallax-performance";
 
 function ProjectDetails({ name }: { name: (typeof projects)[number]["name"] }) {
-  if (name === "Chronallax") return <>
-    <div className="chronallax-result">
-      <strong className="result-label daily-return-label">Current daily return</strong>
-      <p className="result-number"><span className="result-approx">≈</span>21.36<span>%</span></p>
-    </div>
-    <dl className="chronallax-metrics">
-      <div><dt>Decision latency · p50</dt><dd>39.3 <span>μs</span></dd></div>
-      <div><dt>End-to-end order latency · p50</dt><dd>3.4 <span>ms</span></dd></div>
-      <div><dt>Markets monitored in parallel</dt><dd>36,934</dd></div>
-    </dl>
-    <div className="project-note"><p>Live performance data will be published here.</p></div>
-  </>;
+  if (name === "Chronallax") return <ChronallaxPerformance />;
 
   if (name === "Echo") return <>
     <div className="echo-result">

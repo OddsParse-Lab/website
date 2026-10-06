@@ -53,7 +53,7 @@ for (const route of routes) {
 
   if (route === '/projects/') {
     const names = ['Chronallax', 'Echo', 'Heimdall', 'Torsion', 'Parallax'];
-    const details = ['Current daily return', 'Development-stage result', 'Time-decayed information weighting.', 'Combined annualized return', 'Semantic market matching.'];
+    const details = ['Average daily return', 'Development-stage result', 'Time-decayed information weighting.', 'Combined annualized return', 'Semantic market matching.'];
     const list = nodes.find(node => node['@type'] === 'ItemList');
     assert.deepEqual(list.itemListElement.map(entry => entry.item.name), names);
     names.forEach((name, index) => {
@@ -61,11 +61,12 @@ for (const route of routes) {
       assert.ok(panel, `${name}: exported panel must exist`);
       assert.ok(panel.includes(`<h2>${name}</h2>`), `${name}: content must render without clicking or JavaScript`);
       assert.ok(panel.includes(`${String(index + 1).padStart(2, '0')}<!-- --> / <!-- -->05`), `${name}: correct project counter`);
-      assert.equal(panel.includes('Live performance data will be published here.'), name === 'Chronallax');
+      assert.ok(!panel.includes('Live performance data will be published here.'));
       assert.equal(panel.includes('class="development-badge"'), name === 'Echo');
       if (name === 'Chronallax') {
-        assert.match(panel, /<strong[^>]*>Current daily return<\/strong>/);
-        for (const metric of ['21.36', '39.3', '3.4', '36,934', 'p50']) assert.ok(panel.includes(metric));
+        assert.match(panel, /<span class="result-label">Average daily return<\/span>/);
+        assert.ok(!panel.includes('21.36'), 'Do not present an old static return as live data');
+        for (const metric of ['39.3', '3.4', '36,934', 'p50', 'Loading performance data', 'Cumulative return', 'peak capital in use']) assert.ok(panel.includes(metric));
       }
       assert.ok(panel.includes(details[index]), `${name}: full detail must be in exported HTML`);
       assert.equal(/\bhidden=""/.test(panel), index !== 0, `${name}: preserve initial tab visibility`);
