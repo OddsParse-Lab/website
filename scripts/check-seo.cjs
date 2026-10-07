@@ -66,7 +66,7 @@ for (const route of routes) {
       if (name === 'Chronallax') {
         assert.match(panel, /<span class="result-label">Average daily return<\/span>/);
         assert.ok(!panel.includes('21.36'), 'Do not present an old static return as live data');
-        for (const metric of ['39.3', '3.4', '36,934', 'p50', 'Loading performance data', 'Cumulative return', 'peak capital in use']) assert.ok(panel.includes(metric));
+        for (const metric of ['39.3', '3.4', '65,297', 'p50', 'Loading performance data', 'Cumulative return', 'peak capital in use']) assert.ok(panel.includes(metric));
       }
       assert.ok(panel.includes(details[index]), `${name}: full detail must be in exported HTML`);
       assert.equal(/\bhidden=""/.test(panel), index !== 0, `${name}: preserve initial tab visibility`);
