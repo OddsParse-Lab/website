@@ -71,7 +71,7 @@ export function ChronallaxPerformance() {
     </div>
     <dl className="chronallax-metrics">
       <div><dt>Decision latency · p50</dt><dd>39.3 <span>μs</span></dd></div>
-      <div><dt>End-to-end order latency · p50</dt><dd>3.4 <span>ms</span></dd></div>
+      <div><dt>End-to-end order latency · p50</dt><dd>3.2 <span>ms</span></dd></div>
       <div><dt>Markets monitored in parallel</dt><dd>98,408</dd></div>
     </dl>
     <div className="project-note" aria-live="polite"><p>
