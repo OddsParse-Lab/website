@@ -171,7 +171,6 @@ export function SpotlagArticle() {
       <p>Our original criterion was straightforward: after a signal appeared, could we obtain a sufficiently favorable price before it disappeared, and still make money after fees?</p>
       <p>The experiment did not meet that criterion. Most of the measured quote adjustment preceded our index signal. Near expiry, high win rates came with prices close to the payout. Earlier entries exposed weaknesses in the model’s uncertainty estimate, selection, and correlated risk. The live ledger finished below zero.</p>
       <p>We discontinued the strategy. What remained useful was the research process: recording and replay, explicit execution assumptions, event studies with placebo comparisons, and evaluation beyond the subset of trades we happened to take.</p>
-      <p>The next time a quote appears stale, the first question is simple: stale according to which clock?</p>
     </section>
   </>;
 }
