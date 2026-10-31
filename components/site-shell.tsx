@@ -4,7 +4,7 @@ export function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={diagonal ? "M6 18 18 6M6 6h12v12" : "M4 12h15m-6-6 6 6-6 6"} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
 
-export function SiteShell({ children, activePage = "home" }: { children: React.ReactNode; activePage?: "home" | "projects" | "about" }) {
+export function SiteShell({ children, activePage = "home" }: { children: React.ReactNode; activePage?: "home" | "projects" | "about" | "blog" }) {
   return <div className="site-shell">
     <a className="skip-link" href="#main">Skip to content</a>
     <header className="site-header">
@@ -15,6 +15,7 @@ export function SiteShell({ children, activePage = "home" }: { children: React.R
       <nav className="main-nav" aria-label="Main navigation">
         <Link href="/" className="nav-link" aria-current={activePage === "home" ? "page" : undefined}>Home</Link>
         <Link href="/projects" className="nav-link" aria-current={activePage === "projects" ? "page" : undefined}>Projects</Link>
+        <Link href="/blog" className="nav-link" aria-current={activePage === "blog" ? "page" : undefined}>Blog</Link>
         <Link href="/about" className="nav-link" aria-current={activePage === "about" ? "page" : undefined}>About</Link>
         <a href="mailto:team@oddsparse.trade" className="nav-link">Contact</a>
       </nav>

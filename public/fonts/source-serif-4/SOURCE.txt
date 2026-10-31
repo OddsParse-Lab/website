@@ -1,0 +1,5 @@
+Source Serif 4 by Adobe. SIL Open Font License 1.1.
+Official source: https://github.com/adobe-fonts/source-serif
+Latin variable Roman font, optical size and weight axes.
+Downloaded from Google Fonts:
+https://fonts.gstatic.com/s/sourceserif4/v15/vEFI2_tTDB4M7-auWDN0ahZJW1gb8te1Xb7G.woff2

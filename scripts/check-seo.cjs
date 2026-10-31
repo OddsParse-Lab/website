@@ -5,7 +5,7 @@ const path = require('node:path');
 // Check the actual export, not just metadata configuration or React source.
 const output = path.join(__dirname, '../out');
 const base = 'https://www.oddsparse.trade';
-const routes = ['/', '/projects/', '/about/'];
+const routes = ['/', '/projects/', '/about/', '/blog/'];
 const titles = new Set();
 const descriptions = new Set();
 
@@ -62,7 +62,7 @@ for (const route of routes) {
       assert.ok(panel.includes(`<h2>${name}</h2>`), `${name}: content must render without clicking or JavaScript`);
       assert.ok(panel.includes(`${String(index + 1).padStart(2, '0')}<!-- --> / <!-- -->05`), `${name}: correct project counter`);
       assert.ok(!panel.includes('Live performance data will be published here.'));
-      assert.equal(panel.includes('class="development-badge"'), name === 'Echo');
+      assert.ok(panel.includes(`<span class="project-status-badge">${name === 'Chronallax' ? 'Live' : 'Archived'}</span>`));
       if (name === 'Chronallax') {
         assert.match(panel, /<span class="result-label">Average daily return<\/span>/);
         assert.ok(!panel.includes('21.36'), 'Do not present an old static return as live data');
@@ -78,7 +78,7 @@ for (const route of routes) {
 assert.equal(titles.size, routes.length, 'Every page needs its own title');
 assert.equal(descriptions.size, routes.length, 'Every page needs its own description');
 const sitemap = fs.readFileSync(path.join(output, 'sitemap.xml'), 'utf8');
-assert.deepEqual([...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(match => match[1]).sort(), routes.map(route => `${base}${route}`).sort());
+assert.deepEqual([...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(match => match[1]).sort(), [...routes, '/blog/one-second-behind/'].map(route => `${base}${route}`).sort());
 const robots = fs.readFileSync(path.join(output, 'robots.txt'), 'utf8');
 assert.match(robots, /User-Agent: \*/i);
 assert.match(robots, /Allow: \/\s/);
@@ -86,3 +86,81 @@ assert.ok(robots.includes(`Sitemap: ${base}/sitemap.xml`));
 assert.ok(!/Disallow:\s*\/(?:\s|$)/i.test(robots));
 assert.ok(fs.existsSync(path.join(output, 'brand/logo.png')));
 console.log('PASS sitemap, robots.txt, and public brand image');
+
+const blog = fs.readFileSync(path.join(output, 'blog/index.html'), 'utf8');
+const articleLinks = [...new Set([...blog.matchAll(/href="(\/blog\/[^"/]+\/)"/g)].map(match => match[1]))];
+assert.deepEqual(articleLinks, ['/blog/one-second-behind/']);
+assert.ok(!blog.includes('Sample articles'));
+assert.ok(!blog.includes('journal-feature'));
+assert.ok(!blog.includes('journal-kicker'));
+const blogNodes = [...blog.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+  .flatMap(match => { const node = JSON.parse(match[1]); return node['@graph'] || [node]; });
+const blogList = blogNodes.find(node => node['@type'] === 'ItemList');
+assert.equal(blogList.numberOfItems, articleLinks.length);
+assert.deepEqual(blogList.itemListElement.map(entry => entry.item.url), articleLinks.map(route => `${base}${route}`));
+assert.equal(blogNodes.find(node => node['@type'] === 'CollectionPage').mainEntity['@id'], blogList['@id']);
+const postDates = [...blog.matchAll(/<time dateTime="([^"]+)"/g)].map(match => match[1]);
+assert.equal(postDates.length, articleLinks.length);
+assert.deepEqual(postDates, [...postDates].sort().reverse(), 'Blog articles should be newest first');
+for (const route of articleLinks) {
+  const html = fs.readFileSync(path.join(output, route, 'index.html'), 'utf8');
+  assert.ok(!/name="(?:robots|googlebot)" content="[^"]*noindex/.test(html));
+  assert.ok(!html.includes('Draft preview'));
+  assert.ok(!/polytest|a friend|friend’s experiment|Sample content/i.test(html));
+  assert.ok(html.includes('approximately ten-hour local event-study sample'));
+  assert.ok(html.includes('unrounded per-contract approximation'));
+  assert.ok(html.includes('−$26.16'));
+  assert.ok(html.includes('1,029 / 935'));
+  assert.ok(!html.includes('class="journal-next"'), 'A single article must not link to itself as the next article');
+  const data = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(match => JSON.parse(match[1]));
+  const nodes = data.flatMap(node => node['@graph'] || [node]);
+  const article = nodes.find(node => node['@type'] === 'BlogPosting');
+  assert.equal(article.url, `${base}${route}`);
+  assert.equal(article.author['@id'], `${base}/#organization`);
+  assert.equal(article.author.name, 'OddsParse Lab');
+  assert.equal(article.author.url, `${base}/about/`);
+  const page = nodes.find(node => node['@type'] === 'WebPage');
+  assert.equal(article.mainEntityOfPage['@id'], page['@id']);
+  assert.equal(page.mainEntity['@id'], article['@id']);
+  assert.equal(page.breadcrumb['@id'], nodes.find(node => node['@type'] === 'BreadcrumbList')['@id']);
+  assert.equal(article.isAccessibleForFree, true);
+  const minutes = Number(article.timeRequired.match(/^PT(\d+)M$/)?.[1]);
+  assert.ok(minutes > 0);
+  assert.ok(html.includes(`Estimated reading time: ${minutes} minutes`));
+  const sitemapEntry = [...sitemap.matchAll(/<url>([\s\S]*?)<\/url>/g)].find(match => match[1].includes(`<loc>${base}${route}</loc>`));
+  assert.ok(sitemapEntry[1].includes(`<lastmod>${article.datePublished}</lastmod>`));
+  assert.ok(html.includes('We spent two weeks testing a spot-lag trading strategy'), 'Article text must be present in static HTML');
+  const meta = [...html.matchAll(/<meta\b[^>]*>/g)].map(match => attributes(match[0]));
+  const values = key => meta.filter(tag => tag.name === key || tag.property === key).map(tag => tag.content);
+  const title = html.match(/<title>(.*?)<\/title>/)[1];
+  const heading = html.match(/<h1(?:\s[^>]*)?>(.*?)<\/h1>/)[1];
+  assert.equal(article.headline, heading, 'Visible headline and article schema must agree');
+  assert.equal(title, `${heading} - OddsParse Lab`);
+  assert.deepEqual(values('og:title'), [title]);
+  assert.deepEqual(values('twitter:title'), [title]);
+  assert.deepEqual(values('description'), [article.description]);
+  assert.deepEqual(values('og:description'), values('description'));
+  assert.deepEqual(values('twitter:description'), values('description'));
+  assert.ok(meta.some(tag => tag.property === 'og:type' && tag.content === 'article'));
+  assert.ok(meta.some(tag => tag.property === 'article:published_time' && tag.content === article.datePublished));
+  assert.ok(meta.some(tag => tag.name === 'twitter:card' && tag.content === 'summary_large_image'));
+  assert.ok(fs.existsSync(path.join(output, article.image.replace(base, ''))));
+  const figures = [...html.matchAll(/<figure\b[\s\S]*?<\/figure>/g)].map(match => match[0]);
+  assert.equal(figures.length, 5);
+  assert.equal(figures.join('').match(/<canvas\b/g).length, 6);
+  for (const figure of figures) {
+    const canvas = attributes(figure.match(/<canvas\b[^>]*>/)[0]);
+    assert.equal(canvas.role, 'img');
+    assert.ok(canvas['aria-label'].length > 40);
+    assert.ok(figure.includes('<figcaption>'));
+    assert.ok(!figure.includes('View data'));
+    assert.ok(figure.includes('class="sr-only"'));
+    assert.ok(figure.includes('<table>'), 'Chart data remains accessible without Canvas or JavaScript');
+    assert.ok(!figure.includes('.svg'));
+  }
+  assert.ok(html.includes(`rel="canonical" href="${base}${route}"`));
+  assert.ok(html.includes('href="/blog/"'));
+  assert.equal((html.match(/<h1(?:\s[^>]*)?>/g) || []).length, 1);
+  assert.ok(sitemap.includes(`${base}${route}`), 'The real research article belongs in the sitemap');
+}
+console.log('PASS research article, figures, structured data, and indexing');

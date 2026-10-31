@@ -14,7 +14,7 @@ export default function Projects() {
     <StructuredData data={{ ...structuredData, "@graph": [
       { ...structuredData["@graph"][0], mainEntity: { "@id": `${site.url}/projects/#research-projects` } },
       structuredData["@graph"][1],
-      { "@type": "ItemList", "@id": `${site.url}/projects/#research-projects`, name: "OddsParse Lab research projects", numberOfItems: projects.length, itemListElement: projects.map((project, index) => ({ "@type": "ListItem", position: index + 1, item: { "@type": "CreativeWork", name: project.name, description: project.description, creator: { "@id": `${site.url}/#organization` } } })) },
+      { "@type": "ItemList", "@id": `${site.url}/projects/#research-projects`, name: "OddsParse Lab research projects", numberOfItems: projects.length, itemListElement: projects.map((project, index) => ({ "@type": "ListItem", position: index + 1, item: { "@type": "CreativeWork", name: project.name, description: project.description, creativeWorkStatus: project.status, creator: { "@id": `${site.url}/#organization` } } })) },
     ] }} />
     <ProjectExplorer />
   </SiteShell>;

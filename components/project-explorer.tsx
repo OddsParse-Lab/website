@@ -14,7 +14,7 @@ function ProjectDetails({ name }: { name: (typeof projects)[number]["name"] }) {
       <p className="result-number">94.1<span>%</span></p>
       <span className="result-caption">Development-stage result</span>
     </div>
-    <div className="project-note"><p><span>Still in development. Stay tuned.</span></p></div>
+    <div className="project-note"><p><span>Research archived. Development discontinued.</span></p></div>
   </>;
 
   if (name === "Heimdall") return <>
@@ -71,7 +71,7 @@ export function ProjectExplorer() {
     <div className="project-stage" ref={stageRef}>
     {projects.map((item, index) => <section key={item.name} id={`project-panel-${index}`} role="tabpanel" aria-labelledby={`project-tab-${index}`} tabIndex={0} hidden={selected !== index} className="project-panel">
         <div className="project-panel-top"><span>{item.domain}</span><span className="project-counter">{String(index + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}</span></div>
-        <div className="project-heading"><h2>{item.name}</h2>{item.name === "Echo" && <span className="development-badge">In development</span>}</div>
+        <div className="project-heading"><h2>{item.name}</h2><span className="project-status-badge">{item.status}</span></div>
         <p className="project-description">{item.description}</p>
         <ProjectDetails name={item.name} />
     </section>)}
