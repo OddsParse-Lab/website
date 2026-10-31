@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, type KeyboardEvent } from "react";
+import Link from "next/link";
 import { useProjectMotion } from "./use-project-motion";
 import { projects } from "@/lib/projects";
 import { ChronallaxPerformance } from "./chronallax-performance";
@@ -14,7 +15,7 @@ function ProjectDetails({ name }: { name: (typeof projects)[number]["name"] }) {
       <p className="result-number">94.1<span>%</span></p>
       <span className="result-caption">Development-stage result</span>
     </div>
-    <div className="project-note"><p><span>Research archived. Development discontinued.</span></p></div>
+    <div className="project-note"><p><span>Research archived. Development discontinued.</span><br /><Link href="/blog/one-second-behind/">Read the postmortem</Link></p></div>
   </>;
 
   if (name === "Heimdall") return <>

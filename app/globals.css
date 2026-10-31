@@ -98,11 +98,13 @@ h1 { margin: 0; font-size: clamp(36px, 4.3vw, 68px); line-height: 1.12; font-wei
 .project-note { display: flex; gap: 12px; padding-top: 18px; border-top: 1px solid #e4e7e8; margin-top: auto; }
 .project-note p { margin: 0; font-size: 13px; line-height: 1.7; color: #565c60; }
 .project-note p > span { color: #8b9195; }
+.project-note a { text-decoration: underline; text-decoration-color: #b8bec2; text-underline-offset: 3px; }
+.project-note a:hover { color: var(--ink); text-decoration-color: currentColor; }
 .source-list { display: flex; flex-wrap: wrap; gap: 7px; margin: 23px 0 10px; }
 .source-list span { background: #fff; border: 1px solid #e3e6e7; border-radius: 5px; padding: 5px 9px; font-size: 12px; color: #5d6468; }
 .source-list span:last-child { border-color: transparent; background: none; color: #909598; }
 .research-steps { list-style: none; padding: 0; margin: 8px 0 0; }
-.research-steps li { display: flex; gap: 19px; padding: 13px 0; border-bottom: 1px solid #e6e9ea; }
+.research-steps li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 19px; padding: 13px 0; border-bottom: 1px solid #e6e9ea; }
 .research-steps li:last-child { border: 0; padding-bottom: 0; }
 .research-steps .step-number { padding-top: 3px; }
 .research-steps h3 { font-size: 15px; font-weight: 500; margin: 0 0 4px; }
@@ -134,7 +136,7 @@ h1 { margin: 0; font-size: clamp(36px, 4.3vw, 68px); line-height: 1.12; font-wei
 }
 @media (min-width: 701px) and (max-height: 800px) {
   .project-explorer { padding-top: 0; padding-bottom: 25px; }
-  .project-panel { min-height: 440px; padding-top: 20px; padding-bottom: 20px; }
+  .project-panel { min-height: 440px; }
   .project-heading { margin-top: 14px; }
   .project-heading h2 { font-size: 32px; }
   .project-description { font-size: 15px; line-height: 1.5; margin-top: 12px; }
@@ -207,7 +209,7 @@ h1 { margin: 0; font-size: clamp(36px, 4.3vw, 68px); line-height: 1.12; font-wei
 .journal-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 45px; padding: 32px 0; border-bottom: 1px solid #e3e5e6; }
 .journal-row h2 { margin: 0; font-size: clamp(22px, 2vw, 27px); font-weight: 450; line-height: 1.35; letter-spacing: -.035em; }
 .journal-row p { margin: 11px 0 0; max-width: 650px; font-size: 15px; line-height: 1.7; color: var(--muted); }
-.journal-row time { padding-top: 5px; font-size: 14px; line-height: 1.6; color: #80868b; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.journal-row-meta { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: 8px; font-size: 14px; line-height: 1.6; color: #80868b; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .journal-row:hover h2, .journal-next a:hover, .journal-back:hover { color: #62696e; }
 .journal-preview-note { margin: 28px 0 0; font-size: 13px; line-height: 1.6; color: #858b8f; }
 .journal-article { width: calc(100% - 92px); max-width: 760px; margin: 25px auto 60px; flex: 1; }
@@ -239,7 +241,7 @@ h1 { margin: 0; font-size: clamp(36px, 4.3vw, 68px); line-height: 1.12; font-wei
   .journal-opening { grid-template-columns: 1fr; gap: 24px; margin-bottom: 38px; }
   .journal-opening p { font-size: 16px; margin-bottom: 0; }
   .journal-row { grid-template-columns: 1fr; gap: 14px; padding: 26px 0; }
-  .journal-row time { padding-top: 0; }
+  .journal-row-meta { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 16px; }
   .journal-article { margin-top: 18px; margin-bottom: 40px; }
   .journal-back { margin-bottom: 30px; }
   .journal-article-body p { font-size: 16px; }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ReadingTime } from "@/components/reading-time";
 import { notFound } from "next/navigation";
 import { SiteShell } from "@/components/site-shell";
 import { StructuredData } from "@/components/structured-data";
@@ -73,13 +74,7 @@ export default async function BlogPost({ params }: Props) {
         <header className="journal-article-header">
           <div className="journal-article-meta">
             <time className="journal-article-date" dateTime={post.date}>{formatPostDate(post.date)}</time>
-            <span className="journal-reading-time" aria-label={`Estimated reading time: ${post.readingMinutes} minutes`}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 2" />
-              </svg>
-              {post.readingMinutes} min read
-            </span>
+            <ReadingTime minutes={post.readingMinutes} />
           </div>
           <h1>{post.title}</h1>
           <p className="journal-standfirst">{post.excerpt}</p>

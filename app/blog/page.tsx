@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ReadingTime } from "@/components/reading-time";
 import { SiteShell } from "@/components/site-shell";
 import { StructuredData } from "@/components/structured-data";
 import { pageMetadata, pageSchema, site } from "@/lib/site";
@@ -37,7 +38,10 @@ export default function Blog() {
         {posts.map(post => <article key={post.slug}>
           <Link className="journal-row" href={`/blog/${post.slug}/`}>
             <div><h2>{post.title}</h2><p>{post.excerpt}</p></div>
-            <time dateTime={post.date}>{formatPostDate(post.date)}</time>
+            <div className="journal-row-meta">
+              <time dateTime={post.date}>{formatPostDate(post.date)}</time>
+              <ReadingTime minutes={post.readingMinutes} />
+            </div>
           </Link>
         </article>)}
       </div>
