@@ -153,6 +153,14 @@ export function SpotlagArticle() {
       <p>Simply widening our model did not establish an edge. In the filtered sample used for the scale scan, moving from k = 1 to k = 1.1 improved Brier score from 0.1252 to 0.1250. It was a small in-sample change, not proof that a recalibrated strategy would survive live execution.</p>
     </section>
 
+    <section aria-labelledby="tradable-window">
+      <h2 id="tradable-window">A visible window is not necessarily a tradable one</h2>
+      <p>Three distinctions matter when interpreting an apparent spot-lag opportunity. First, a direct exchange spot feed may reveal a move before a settlement index publishes it. That puts the signal at a different point in the information sequence. We did not test that version, so our index-driven result cannot establish whether a direct spot signal would have arrived early enough to trade.</p>
+      <p>Second, displayed liquidity and the speed of the participants supplying it can differ across markets. A shallow book may show a price gap with very little capacity behind it. Slower quote updates are one possible explanation, but depth alone does not identify the liquidity providers or establish how quickly they react. Our Kalshi observations cannot answer that question for another venue.</p>
+      <p>Third, filling a backtest at the displayed best price assumes that the quote survives until matching. Polymarket’s <a href="https://docs.polymarket.com/trading/place-orders">order documentation</a> describes a delayed status for marketable orders subject to a matching delay: acceptance is not a fill. Where makers can cancel during that interval, they have additional time to withdraw a stale quote before the taker reaches it. That mechanism protects resting liquidity from being picked off; it does not reserve the displayed price for the taker. A replay that omits it can overstate executable opportunity.</p>
+      <p>Our experiment did not measure how much of any apparent window on another venue survives live execution. For the Kalshi strategy we tested, the problem occurred earlier: most repricing preceded the index signal itself. Even without an additional taker delay, faster matching would not recover a price that had already changed.</p>
+    </section>
+
     <section aria-labelledby="limits">
       <h2 id="limits">What this experiment did not establish</h2>
       <p>The result is narrower than “spot-lag trading does not work.” We tested one class of strategies, using a particular settlement-index input, in a particular set of 15-minute markets.</p>
@@ -170,6 +178,7 @@ export function SpotlagArticle() {
       <h2 id="conclusion">Why we stopped</h2>
       <p>Our original criterion was straightforward: after a signal appeared, could we obtain a sufficiently favorable price before it disappeared, and still make money after fees?</p>
       <p>The experiment did not meet that criterion. Most of the measured quote adjustment preceded our index signal. Near expiry, high win rates came with prices close to the payout. Earlier entries exposed weaknesses in the model’s uncertainty estimate, selection, and correlated risk. The live ledger finished below zero.</p>
+      <p><strong>Our strategy was reacting to a move the order book had already largely priced in.</strong></p>
       <p>We discontinued the strategy. What remained useful was the research process: recording and replay, explicit execution assumptions, event studies with placebo comparisons, and evaluation beyond the subset of trades we happened to take.</p>
     </section>
   </>;
