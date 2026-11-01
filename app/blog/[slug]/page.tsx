@@ -81,7 +81,7 @@ export default async function BlogPost({ params }: Props) {
           <h1>{post.title.split(/(\S+-\S+)/).map((part, index) => part.includes("-") ? <span className="journal-title-term" key={index}>{part}</span> : part)}</h1>
           <p className="journal-standfirst">{post.excerpt}</p>
           <div className="journal-publication-meta">
-            <span className="journal-author"><span className="journal-author-name">{post.author.name}</span><span className="journal-author-team">, {post.author.affiliation.name}</span></span>
+            <span className="journal-author"><span className="journal-author-name">{post.author.name}</span><span className="journal-author-role">, {post.author.jobTitle}</span></span>
           </div>
         </header>
         <div className="journal-cover">

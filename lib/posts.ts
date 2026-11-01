@@ -1,11 +1,11 @@
 import { SpotlagArticle } from "@/content/posts/spotlag";
-import { researchTeam } from "@/lib/site";
+import { organization } from "@/lib/site";
 
 export const posts = [
   {
     slug: "one-second-behind",
     date: "2026-10-30",
-    author: { "@type": "Person", name: "Kevin Z", affiliation: researchTeam },
+    author: { "@type": "Person", name: "Kevin Z", jobTitle: "Quantitative Researcher", affiliation: organization },
     readingMinutes: 16, // Estimated at 200 words per minute, including tables and captions.
     title: "Why Our Kalshi Spot-Lag Trading Strategy Failed",
     description: "A postmortem of our Kalshi 15-minute crypto trading strategy: settlement-index latency, model calibration, fees, and results from 1,029 submitted live orders.",

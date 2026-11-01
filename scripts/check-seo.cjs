@@ -118,8 +118,9 @@ for (const route of articleLinks) {
   assert.equal(article.url, `${base}${route}`);
   assert.equal(article.author['@type'], 'Person');
   assert.equal(article.author.name, 'Kevin Z');
-  assert.equal(article.author.affiliation.name, 'OddsParse Researchers');
-  assert.equal(article.author.affiliation.parentOrganization['@id'], `${base}/#organization`);
+  assert.equal(article.author.jobTitle, 'Quantitative Researcher');
+  assert.equal(article.author.affiliation.name, 'OddsParse Lab');
+  assert.equal(article.author.affiliation['@id'], `${base}/#organization`);
   assert.equal(html.match(/<span class="journal-author-name">(.*?)<\/span>/)?.[1], article.author.name);
   assert.ok(!/<a\b[^>]*class="journal-author"/.test(html));
   const page = nodes.find(node => node['@type'] === 'WebPage');
