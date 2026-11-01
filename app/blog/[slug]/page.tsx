@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
+import { ArticleContents } from "@/components/article-contents";
 import { ReadingTime } from "@/components/reading-time";
 import { notFound } from "next/navigation";
 import { SiteShell } from "@/components/site-shell";
@@ -16,11 +18,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = posts.find(post => post.slug === slug);
   if (!post) notFound();
   const metadata = pageMetadata(post.title, post.description, `/blog/${post.slug}/`);
-  const image = { url: `${site.url}${post.image}`, width: 1656, height: 864, alt: post.imageAlt };
+  const image = { url: `${site.url}${post.socialImage}`, width: 1200, height: 630, alt: post.imageAlt };
   return {
     ...metadata,
-    authors: [{ name: site.name, url: `${site.url}/about/` }],
-    openGraph: { ...metadata.openGraph, type: "article", publishedTime: post.date, authors: [`${site.url}/about/`], images: [image] },
+    authors: [{ name: post.author.name }],
+    openGraph: { ...metadata.openGraph, type: "article", publishedTime: post.date, authors: [post.author.name], images: [image] },
     twitter: { ...metadata.twitter, card: "summary_large_image", images: [image] },
   };
 }
@@ -33,7 +35,7 @@ export default async function BlogPost({ params }: Props) {
   const next = ordered.length > 1 ? ordered[(ordered.indexOf(post) + 1) % ordered.length] : null;
   const url = `${site.url}/blog/${post.slug}/`;
   const Body = post.Body;
-  return <SiteShell activePage="blog">
+  return <SiteShell activePage="blog" article>
     <StructuredData data={{
       "@context": "https://schema.org",
       "@graph": [
@@ -48,7 +50,7 @@ export default async function BlogPost({ params }: Props) {
           "@type": "BlogPosting", "@id": `${url}#article`, url,
           headline: post.title, description: post.description, datePublished: post.date,
           inLanguage: "en", image: `${site.url}${post.image}`,
-          author: { "@type": "Organization", "@id": organization["@id"], name: site.name, url: `${site.url}/about/` }, publisher: { "@id": organization["@id"] },
+          author: post.author, publisher: { "@id": organization["@id"] },
           mainEntityOfPage: { "@id": `${url}#webpage` },
           isAccessibleForFree: true, timeRequired: `PT${post.readingMinutes}M`,
           isPartOf: { "@id": `${site.url}/blog/#webpage` },
@@ -76,10 +78,19 @@ export default async function BlogPost({ params }: Props) {
             <time className="journal-article-date" dateTime={post.date}>{formatPostDate(post.date)}</time>
             <ReadingTime minutes={post.readingMinutes} />
           </div>
-          <h1>{post.title}</h1>
+          <h1>{post.title.split(/(\S+-\S+)/).map((part, index) => part.includes("-") ? <span className="journal-title-term" key={index}>{part}</span> : part)}</h1>
           <p className="journal-standfirst">{post.excerpt}</p>
+          <div className="journal-publication-meta">
+            <span className="journal-author"><span className="journal-author-name">{post.author.name}</span><span className="journal-author-team">, {post.author.affiliation.name}</span></span>
+          </div>
         </header>
-        <div className="journal-article-body"><Body /></div>
+        <div className="journal-cover">
+          <Image src={post.image} alt={post.imageAlt} width={1920} height={800} loading="eager" unoptimized />
+        </div>
+        <div className="journal-reading-layout">
+          <ArticleContents sections={post.sections} />
+          <div id="article-overview" className="journal-article-body"><Body /></div>
+        </div>
       </article>
       {next && <nav className="journal-next" aria-label="Continue reading"><span>Next article</span><Link href={`/blog/${next.slug}/`}>{next.title}</Link></nav>}
     </main>

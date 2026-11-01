@@ -91,7 +91,7 @@ const blog = fs.readFileSync(path.join(output, 'blog/index.html'), 'utf8');
 const articleLinks = [...new Set([...blog.matchAll(/href="(\/blog\/[^"/]+\/)"/g)].map(match => match[1]))];
 assert.deepEqual(articleLinks, ['/blog/one-second-behind/']);
 assert.ok(!blog.includes('Sample articles'));
-assert.ok(!blog.includes('journal-feature'));
+assert.equal([...blog.matchAll(/href="(\/blog\/[^"/]+\/)"/g)].length, articleLinks.length, 'The newest article must not repeat in the archive grid');
 assert.ok(!blog.includes('journal-kicker'));
 const blogNodes = [...blog.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
   .flatMap(match => { const node = JSON.parse(match[1]); return node['@graph'] || [node]; });
@@ -116,9 +116,12 @@ for (const route of articleLinks) {
   const nodes = data.flatMap(node => node['@graph'] || [node]);
   const article = nodes.find(node => node['@type'] === 'BlogPosting');
   assert.equal(article.url, `${base}${route}`);
-  assert.equal(article.author['@id'], `${base}/#organization`);
-  assert.equal(article.author.name, 'OddsParse Lab');
-  assert.equal(article.author.url, `${base}/about/`);
+  assert.equal(article.author['@type'], 'Person');
+  assert.equal(article.author.name, 'Kevin Z');
+  assert.equal(article.author.affiliation.name, 'OddsParse Researchers');
+  assert.equal(article.author.affiliation.parentOrganization['@id'], `${base}/#organization`);
+  assert.equal(html.match(/<span class="journal-author-name">(.*?)<\/span>/)?.[1], article.author.name);
+  assert.ok(!/<a\b[^>]*class="journal-author"/.test(html));
   const page = nodes.find(node => node['@type'] === 'WebPage');
   assert.equal(article.mainEntityOfPage['@id'], page['@id']);
   assert.equal(page.mainEntity['@id'], article['@id']);
@@ -133,7 +136,7 @@ for (const route of articleLinks) {
   const meta = [...html.matchAll(/<meta\b[^>]*>/g)].map(match => attributes(match[0]));
   const values = key => meta.filter(tag => tag.name === key || tag.property === key).map(tag => tag.content);
   const title = html.match(/<title>(.*?)<\/title>/)[1];
-  const heading = html.match(/<h1(?:\s[^>]*)?>(.*?)<\/h1>/)[1];
+  const heading = html.match(/<h1(?:\s[^>]*)?>(.*?)<\/h1>/)[1].replace(/<[^>]*>/g, '');
   assert.equal(article.headline, heading, 'Visible headline and article schema must agree');
   assert.equal(title, `${heading} - OddsParse Lab`);
   assert.deepEqual(values('og:title'), [title]);

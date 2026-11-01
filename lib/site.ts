@@ -19,6 +19,14 @@ export const organization = {
   logo: { "@type": "ImageObject", url: `${site.url}/brand/logo.png`, width: 300, height: 300 },
 };
 
+export const researchTeam = {
+  "@type": "Organization",
+  "@id": `${site.url}/about/#researchers`,
+  name: "OddsParse Researchers",
+  url: `${site.url}/about/`,
+  parentOrganization: { "@id": organization["@id"] },
+};
+
 export function pageMetadata(title: string, description: string, path: string): Metadata {
   const fullTitle = path === "/" ? title : `${title} - ${site.name}`;
   const url = `${site.url}${path}`;
