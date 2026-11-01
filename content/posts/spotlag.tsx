@@ -1,3 +1,4 @@
+import { MathFormula } from "@/components/math-formula";
 import { SpotlagChart, type SpotlagChartName } from "@/components/spotlag-charts";
 import type { ReactNode } from "react";
 
@@ -35,12 +36,19 @@ export function SpotlagArticle() {
       <h2 id="model">A deliberately simple model</h2>
       <p>Our baseline assumed zero-drift Brownian price changes. We estimated volatility from the most recent 180 index ticks, requiring at least 25 observations spanning 20 seconds. Log-return volatility was converted into price units before estimating the distribution of the settlement average.</p>
       <p>Averaging matters. With at least 60 seconds remaining, the variance time was the time until the averaging window began, plus the variance contribution of 60 equally weighted future observations. Inside that window, we combined the already observed average with a forecast for the remaining observations.</p>
-      <div className="journal-equation" aria-label="Model equations">
-        <p>τ ≥ 60: V = τ − 60 + (60 × 61 × 121) / (6 × 60²)</p>
-        <p>τ &lt; 60: E = (nA + mS) / 60; V = m(m + 1)(2m + 1) / (6 × 60²)</p>
-        <p>p(Yes) = Φ((E − K′) / (σ√V)); K′ = K − 0.5 × 10⁻ᵈ</p>
+      <div className="journal-equation" role="group" aria-label="Model equations">
+        <MathFormula display label="Variance time">{String.raw`V = \begin{cases}
+          \displaystyle \tau - 60 + \frac{60 \cdot 61 \cdot 121}{6 \cdot 60^{2}}, & \tau \ge 60, \\[1em]
+          \displaystyle \frac{m(m+1)(2m+1)}{6 \cdot 60^{2}}, & \tau < 60.
+        \end{cases}`}</MathFormula>
+        <MathFormula display label="Expected settlement average">{String.raw`E = \begin{cases}
+          S, & \tau \ge 60, \\[0.8em]
+          \displaystyle \frac{nA + mS}{60}, & \tau < 60.
+        \end{cases}`}</MathFormula>
+        <MathFormula display label="Probability of a Yes settlement">{String.raw`p(\mathrm{Yes}) = \Phi\!\left(\frac{E-K'}{\sigma\sqrt{V}}\right)`}</MathFormula>
+        <MathFormula display label="Rounding-adjusted target">{String.raw`K' = K - 0.5 \times 10^{-d}`}</MathFormula>
       </div>
-      <p>Here S is the current index, K the target, d its rounding precision, σ volatility in price units per square-root second, and τ seconds to expiry. Within the final minute, n observations have average A and m = 60 − n remain. Before that minute, E = S. Φ is the standard normal cumulative distribution function.</p>
+      <p>Here <MathFormula>S</MathFormula> is the current index, <MathFormula>K</MathFormula> the target, <MathFormula>d</MathFormula> its rounding precision, <MathFormula>{String.raw`\sigma`}</MathFormula> volatility in price units per square-root second, and <MathFormula>{String.raw`\tau`}</MathFormula> seconds to expiry. Within the final minute, <MathFormula>n</MathFormula> observations have average <MathFormula>A</MathFormula> and <MathFormula>{String.raw`m = 60 - n`}</MathFormula> remain. Before that minute, <MathFormula>{String.raw`E = S`}</MathFormula>. <MathFormula>{String.raw`\Phi`}</MathFormula> is the standard normal cumulative distribution function.</p>
       <p>The initial entry rules required a model probability of at least 80%, an ask no higher than 95 cents, a modeled edge after fees of at least 2.5 cents, and an index displacement of at least 5 basis points from the target. We rejected books older than two seconds and considered five windows: 450, 300, 180, 60, and 30 seconds before expiry. Each market could trigger once per window, with positions held to settlement.</p>
       <p>There was no drift term, jump process, or model of changing volatility. We treated the probabilities as uncalibrated estimates from the beginning.</p>
     </section>
@@ -108,7 +116,7 @@ export function SpotlagArticle() {
       <p>The price explained most of the result. Of the 1,407 first-crossing observations, 1,273 had asks above 98 cents; that group’s estimated net EV was just 0.03 cents per contract. The 90–95 cent group contained only 31 observations, won 87.1% of the time, and lost about 7 cents per contract after modeled fees.</p>
       <p>The apparent bargain was usually expensive enough to have little expected value left. The cheaper contracts were much less certain than a simple displacement signal suggested.</p>
       <p>Median visible top-of-book depth ranged from 276 to 522 contracts across the three entry rules. That is displayed depth, not guaranteed capacity. The replay did not establish that all of it would remain available to us in competition with other orders.</p>
-      <p>Fee treatment also matters at this scale. Kalshi’s <a href="https://kalshi.com/docs/kalshi-fee-schedule.pdf">general taker fee schedule</a> uses 0.07 × C × p × (1 − p), rounded up to the next cent, where C is the number of contracts. Our per-second analysis uses the unrounded per-contract approximation 0.07 × p × (1 − p). The replay figures above are reported fee-adjusted estimates from the supplied export, not a reconciliation of exchange charges. Live-ledger fees below are actual reported charges.</p>
+      <p>Fee treatment also matters at this scale. Kalshi’s <a href="https://kalshi.com/docs/kalshi-fee-schedule.pdf">general taker fee schedule</a> uses <MathFormula>{String.raw`0.07 \times C \times p \times (1-p)`}</MathFormula>, rounded up to the next cent, where <MathFormula>C</MathFormula> is the number of contracts. Our per-second analysis uses the unrounded per-contract approximation <MathFormula>{String.raw`0.07 \times p \times (1-p)`}</MathFormula>. The replay figures above are reported fee-adjusted estimates from the supplied export, not a reconciliation of exchange charges. Live-ledger fees below are actual reported charges.</p>
     </section>
 
     <section aria-labelledby="selection">
@@ -149,8 +157,8 @@ export function SpotlagArticle() {
         Figure 5. Standardized settlement errors against standard normal quantiles. The first eligible observation per market within 1.5 seconds of the 180-second horizon is used, matching the supplied analysis. A well-specified standard normal model would follow the dashed line.
       </Figure>
       <p>The observed standard deviations were 28–40% above the model’s prediction. Events outside three model standard deviations occurred about 7–13 times as often as a standard normal would suggest. These are small, dependent samples, but the direction of the mismatch was consistent: our model assigned too little probability to large settlement errors.</p>
-      <p>The market’s own prices were less confident. Regressing the normal-score transform of the midpoint against the model’s score gave an approximate relationship of mid ≈ Φ(z/k), with fitted scale factors around 1.25–1.29 outside the final minute. This is a description of observed prices, not evidence of the models used by individual market makers.</p>
-      <p>Simply widening our model did not establish an edge. In the filtered sample used for the scale scan, moving from k = 1 to k = 1.1 improved Brier score from 0.1252 to 0.1250. It was a small in-sample change, not proof that a recalibrated strategy would survive live execution.</p>
+      <p>The market’s own prices were less confident. Regressing the normal-score transform of the midpoint against the model’s score gave an approximate relationship of <MathFormula>{String.raw`\mathrm{mid} \approx \Phi(z/k)`}</MathFormula>, with fitted scale factors around 1.25–1.29 outside the final minute. This is a description of observed prices, not evidence of the models used by individual market makers.</p>
+      <p>Simply widening our model did not establish an edge. In the filtered sample used for the scale scan, moving from <MathFormula>{String.raw`k = 1`}</MathFormula> to <MathFormula>{String.raw`k = 1.1`}</MathFormula> improved Brier score from 0.1252 to 0.1250. It was a small in-sample change, not proof that a recalibrated strategy would survive live execution.</p>
     </section>
 
     <section aria-labelledby="tradable-window">

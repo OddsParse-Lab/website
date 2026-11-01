@@ -109,6 +109,8 @@ for (const route of articleLinks) {
   assert.ok(!/polytest|a friend|friend’s experiment|Sample content/i.test(html));
   assert.ok(html.includes('approximately ten-hour local event-study sample'));
   assert.ok(html.includes('unrounded per-contract approximation'));
+  assert.ok(html.includes('<math xmlns="http://www.w3.org/1998/Math/MathML"'), 'Equations must render as accessible math in static HTML');
+  assert.ok(!html.includes('class="katex-error"'), 'No equation should fall back to a rendering error');
   assert.ok(html.includes('−$26.16'));
   assert.ok(html.includes('1,029 / 935'));
   assert.ok(!html.includes('class="journal-next"'), 'A single article must not link to itself as the next article');

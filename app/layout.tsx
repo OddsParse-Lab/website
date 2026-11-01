@@ -13,5 +13,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body><StructuredData data={{ "@context": "https://schema.org", ...organization }} />{children}<Analytics /></body></html>;
+  return <html lang="en" data-scroll-behavior="smooth"><body><StructuredData data={{ "@context": "https://schema.org", ...organization }} />{children}<Analytics /></body></html>;
 }
