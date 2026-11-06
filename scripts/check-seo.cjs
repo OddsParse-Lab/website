@@ -52,21 +52,28 @@ for (const route of routes) {
   }
 
   if (route === '/projects/') {
-    const names = ['Chronallax', 'Echo', 'Heimdall', 'Torsion', 'Parallax'];
-    const details = ['Average daily return', 'Development-stage result', 'Time-decayed information weighting.', 'Combined annualized return', 'Semantic market matching.'];
+    const names = ['Chronallax', 'Echo', 'Heimdall', 'Parallax'];
+    const details = ['Average daily return', 'Development-stage result', 'Time-decayed information weighting.', 'Embedding models shortlist markets with similar underlying questions.'];
     const list = nodes.find(node => node['@type'] === 'ItemList');
     assert.deepEqual(list.itemListElement.map(entry => entry.item.name), names);
+    assert.equal(list.numberOfItems, names.length);
+    assert.ok(!html.includes('Torsion'), 'Removed projects must not appear in the exported page or schema');
     names.forEach((name, index) => {
       const panel = html.match(new RegExp(`<section\\b[^>]*id="project-panel-${index}"[^>]*>[\\s\\S]*?<\\/section>`))?.[0];
       assert.ok(panel, `${name}: exported panel must exist`);
       assert.ok(panel.includes(`<h2>${name}</h2>`), `${name}: content must render without clicking or JavaScript`);
-      assert.ok(panel.includes(`${String(index + 1).padStart(2, '0')}<!-- --> / <!-- -->05`), `${name}: correct project counter`);
+      assert.ok(panel.includes(`${String(index + 1).padStart(2, '0')}<!-- --> / <!-- -->${String(names.length).padStart(2, '0')}`), `${name}: correct project counter`);
       assert.ok(!panel.includes('Live performance data will be published here.'));
       assert.ok(panel.includes(`<span class="project-status-badge">${name === 'Chronallax' ? 'Live' : 'Archived'}</span>`));
       if (name === 'Chronallax') {
         assert.match(panel, /<span class="result-label">Average daily return<\/span>/);
         assert.ok(!panel.includes('21.36'), 'Do not present an old static return as live data');
         for (const metric of ['39.3', '3.2', '98,408', 'p50', 'Loading performance data', 'Cumulative return', 'peak capital in use']) assert.ok(panel.includes(metric));
+      }
+      if (name === 'Parallax') {
+        assert.ok(panel.includes('LLMs compare resolution criteria'));
+        assert.ok(panel.includes('Track price spreads across matched markets'));
+        assert.ok(!/Risk-free|5\.07|fully automated trading/i.test(panel));
       }
       assert.ok(panel.includes(details[index]), `${name}: full detail must be in exported HTML`);
       assert.equal(/\bhidden=""/.test(panel), index !== 0, `${name}: preserve initial tab visibility`);

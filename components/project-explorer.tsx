@@ -27,21 +27,12 @@ function ProjectDetails({ name }: { name: (typeof projects)[number]["name"] }) {
     </ol>
   </>;
 
-  if (name === "Torsion") return <>
-    <div className="strategy-results">
-      <div><span className="result-label">Combined annualized return</span><p className="result-number">30<span>+%</span></p></div>
-      <div><span className="result-label">Maximum drawdown</span><p className="result-number"><span className="result-approx">≈</span>17<span>%</span></p></div>
-    </div>
-    <div className="project-note"><p>A proprietary quantitative model.<br /><span>Independent strategy design for US intraday trading.</span></p></div>
-  </>;
-
-  return <>
-    <div className="echo-result">
-      <span className="result-label">Average profit per trade</span>
-      <p className="result-number">5.07<span>%</span></p>
-    </div>
-    <div className="project-note"><p>Semantic market matching.<br /><span>From matching markets to executing trades, fully automated.</span></p></div>
-  </>;
+  return <ol className="research-steps" aria-label="Market matching, monitoring, and trading workflow">
+    <li><span className="step-number">01</span><div><h3>Discover</h3><p>Embedding models shortlist markets with similar underlying questions.</p></div></li>
+    <li><span className="step-number">02</span><div><h3>Review</h3><p>LLMs compare resolution criteria to assess whether contracts refer to the same outcome.</p></div></li>
+    <li><span className="step-number">03</span><div><h3>Monitor</h3><p>Track price spreads across matched markets as quotes change.</p></div></li>
+    <li><span className="step-number">04</span><div><h3>Execute</h3><p>Place orders on matched markets across supported platforms.</p></div></li>
+  </ol>;
 }
 
 export function ProjectExplorer() {

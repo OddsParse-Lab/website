@@ -4,7 +4,7 @@ import { StructuredData } from "@/components/structured-data";
 import { pageMetadata, pageSchema, site } from "@/lib/site";
 import { projects } from "@/lib/projects";
 
-const description = "Explore Chronallax, Echo, Heimdall, Torsion, and Parallax: ultra-high-frequency arbitrage, prediction models, market intelligence, and systematic trading.";
+const description = "Explore Chronallax, Echo, Heimdall, and Parallax: arbitrage research, prediction models, market intelligence, and cross-platform market matching.";
 export const metadata = pageMetadata("Quantitative Research Projects", description, "/projects/");
 
 const structuredData = pageSchema("CollectionPage", "Projects", description, "/projects/");
