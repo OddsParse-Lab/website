@@ -4,7 +4,7 @@ export const site = {
   name: "OddsParse Lab",
   alternateName: "OddsParse",
   url: "https://www.oddsparse.trade",
-  description: "OddsParse Lab is an independent quantitative research and trading group developing models, execution systems, and market intelligence for prediction markets.",
+  description: "OddsParse Lab combines quantitative research and high-performance trading technology to develop proprietary strategies for prediction markets.",
   email: "team@oddsparse.trade",
 };
 
