@@ -32,7 +32,7 @@ export function pageMetadata(title: string, description: string, path: string): 
   };
 }
 
-export function pageSchema(type: "AboutPage" | "CollectionPage", name: string, description: string, path: string) {
+export function pageSchema(type: "AboutPage" | "CollectionPage" | "ContactPage", name: string, description: string, path: string) {
   const url = `${site.url}${path}`;
   return {
     "@context": "https://schema.org",

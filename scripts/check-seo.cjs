@@ -5,7 +5,7 @@ const path = require('node:path');
 // Check the actual export, not just metadata configuration or React source.
 const output = path.join(__dirname, '../out');
 const base = 'https://www.oddsparse.trade';
-const routes = ['/', '/projects/', '/about/', '/blog/'];
+const routes = ['/', '/projects/', '/about/', '/blog/', '/contact/'];
 const titles = new Set();
 const descriptions = new Set();
 
@@ -45,7 +45,7 @@ for (const route of routes) {
     assert.equal(websites[0].alternateName, 'OddsParse');
     assert.equal(websites[0].url, `${base}/`);
   } else {
-    const page = nodes.find(node => node['@type'] === (route === '/about/' ? 'AboutPage' : 'CollectionPage'));
+    const page = nodes.find(node => node['@type'] === (route === '/about/' ? 'AboutPage' : route === '/contact/' ? 'ContactPage' : 'CollectionPage'));
     assert.equal(page.url, `${base}${route}`);
     const breadcrumbs = nodes.find(node => node['@type'] === 'BreadcrumbList');
     assert.deepEqual(breadcrumbs.itemListElement.map(item => item.item), [`${base}/`, `${base}${route}`]);
