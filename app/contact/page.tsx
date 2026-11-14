@@ -23,7 +23,10 @@ export default function Contact() {
           <span className={styles.label}>Start a conversation</span>
           <a className={styles.email} href={`mailto:${site.email}`}>{site.email}</a>
         </div>
-        <p className={styles.invitation}>From research collaborations to exchange partnerships, we’re interested in ambitious work at the intersection of quantitative trading and technology.</p>
+        <div className={styles.invitation}>
+          <p>We consider investment from funds and strategic partners, as well as integrations with trading venues and infrastructure providers.</p>
+          <p>We’re not actively hiring, but are open to strategy collaborations involving capital, execution infrastructure, and profit-sharing arrangements.</p>
+        </div>
       </div>
     </main>
   </SiteShell>;
