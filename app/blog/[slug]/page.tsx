@@ -54,6 +54,7 @@ export default async function BlogPost({ params }: Props) {
           mainEntityOfPage: { "@id": `${url}#webpage` },
           isAccessibleForFree: true, timeRequired: `PT${post.readingMinutes}M`,
           isPartOf: { "@id": `${site.url}/blog/#webpage` },
+          isBasedOn: post.source ? { "@type": "Article", ...post.source } : undefined,
         },
         {
           "@type": "BreadcrumbList", "@id": `${url}#breadcrumb`,
@@ -87,8 +88,8 @@ export default async function BlogPost({ params }: Props) {
         <div className="journal-cover">
           <Image src={post.image} alt={post.imageAlt} width={1920} height={800} loading="eager" unoptimized />
         </div>
-        <div className="journal-reading-layout">
-          <ArticleContents sections={post.sections} />
+        <div className={`journal-reading-layout${post.sections.length ? "" : " journal-reading-layout-summary"}`}>
+          {post.sections.length > 0 && <ArticleContents sections={post.sections} />}
           <div id="article-overview" className="journal-article-body"><Body /></div>
         </div>
       </article>

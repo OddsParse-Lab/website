@@ -6,6 +6,7 @@ const path = require('node:path');
 const output = path.join(__dirname, '../out');
 const base = 'https://www.oddsparse.trade';
 const routes = ['/', '/projects/', '/about/', '/blog/', '/contact/'];
+const articleRoutes = ['/blog/one-second-behind/', '/blog/maker-reaction-function/'];
 const titles = new Set();
 const descriptions = new Set();
 
@@ -85,7 +86,7 @@ for (const route of routes) {
 assert.equal(titles.size, routes.length, 'Every page needs its own title');
 assert.equal(descriptions.size, routes.length, 'Every page needs its own description');
 const sitemap = fs.readFileSync(path.join(output, 'sitemap.xml'), 'utf8');
-assert.deepEqual([...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(match => match[1]).sort(), [...routes, '/blog/one-second-behind/'].map(route => `${base}${route}`).sort());
+assert.deepEqual([...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(match => match[1]).sort(), [...routes, ...articleRoutes].map(route => `${base}${route}`).sort());
 const robots = fs.readFileSync(path.join(output, 'robots.txt'), 'utf8');
 assert.match(robots, /User-Agent: \*/i);
 assert.match(robots, /Allow: \/\s/);
@@ -96,7 +97,7 @@ console.log('PASS sitemap, robots.txt, and public brand image');
 
 const blog = fs.readFileSync(path.join(output, 'blog/index.html'), 'utf8');
 const articleLinks = [...new Set([...blog.matchAll(/href="(\/blog\/[^"/]+\/)"/g)].map(match => match[1]))];
-assert.deepEqual(articleLinks, ['/blog/one-second-behind/']);
+assert.deepEqual(articleLinks, articleRoutes);
 assert.ok(!blog.includes('Sample articles'));
 assert.equal([...blog.matchAll(/href="(\/blog\/[^"/]+\/)"/g)].length, articleLinks.length, 'The newest article must not repeat in the archive grid');
 assert.ok(!blog.includes('journal-kicker'));
@@ -114,19 +115,40 @@ for (const route of articleLinks) {
   assert.ok(!/name="(?:robots|googlebot)" content="[^"]*noindex/.test(html));
   assert.ok(!html.includes('Draft preview'));
   assert.ok(!/polytest|a friend|friend’s experiment|Sample content/i.test(html));
-  assert.ok(html.includes('approximately ten-hour local event-study sample'));
-  assert.ok(html.includes('unrounded per-contract approximation'));
-  assert.ok(html.includes('<math xmlns="http://www.w3.org/1998/Math/MathML"'), 'Equations must render as accessible math in static HTML');
-  assert.ok(!html.includes('class="katex-error"'), 'No equation should fall back to a rendering error');
-  assert.ok(html.includes('−$26.16'));
-  assert.ok(html.includes('1,029 / 935'));
-  assert.ok(!html.includes('class="journal-next"'), 'A single article must not link to itself as the next article');
+  const isSpotlag = route === '/blog/one-second-behind/';
+  if (isSpotlag) {
+    assert.ok(html.includes('approximately ten-hour local event-study sample'));
+    assert.ok(html.includes('unrounded per-contract approximation'));
+    assert.ok(html.includes('<math xmlns="http://www.w3.org/1998/Math/MathML"'), 'Equations must render as accessible math in static HTML');
+    assert.ok(!html.includes('class="katex-error"'), 'No equation should fall back to a rendering error');
+    assert.ok(html.includes('−$26.16'));
+    assert.ok(html.includes('1,029 / 935'));
+    assert.ok(html.includes('We spent two weeks testing a spot-lag trading strategy'), 'Article text must be present in static HTML');
+  } else {
+    assert.ok(html.includes('Using CME futures as an external clock'), 'Summary must render in static HTML');
+    assert.ok(html.includes('This is an English summary.'));
+    assert.ok(html.includes('originally published in Chinese'));
+    assert.ok(html.includes('href="https://imfuyuqiu.com/blog/maker-reaction-function/"'));
+    assert.ok(!html.includes('class="journal-contents"'), 'A short summary does not need a contents sidebar');
+  }
+  const next = html.match(/<nav class="journal-next"[\s\S]*?<\/nav>/)?.[0];
+  assert.ok(next, 'Articles should link to another entry when multiple articles exist');
+  assert.ok(!next.includes(`href="${route}"`), 'Next article must not point to itself');
+  assert.ok(articleRoutes.some(other => other !== route && next.includes(`href="${other}"`)));
   const data = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(match => JSON.parse(match[1]));
   const nodes = data.flatMap(node => node['@graph'] || [node]);
   const article = nodes.find(node => node['@type'] === 'BlogPosting');
   assert.equal(article.url, `${base}${route}`);
   assert.equal(article.author['@type'], 'Person');
-  assert.equal(article.author.name, 'Kevin Z');
+  assert.equal(article.author.name, isSpotlag ? 'Kevin Z' : 'Tony Q');
+  if (!isSpotlag) {
+    assert.equal(article.isBasedOn.url, 'https://imfuyuqiu.com/blog/maker-reaction-function/');
+    assert.equal(article.isBasedOn.inLanguage, 'zh');
+    assert.equal(article.isBasedOn.datePublished, '2026-10-30');
+    assert.equal(article.datePublished, '2026-10-30');
+    assert.equal(article.timeRequired, 'PT32M');
+    assert.equal(article.inLanguage, 'en');
+  }
   assert.equal(article.author.jobTitle, 'Quantitative Researcher');
   assert.equal(article.author.affiliation.name, 'OddsParse Lab');
   assert.equal(article.author.affiliation['@id'], `${base}/#organization`);
@@ -139,10 +161,9 @@ for (const route of articleLinks) {
   assert.equal(article.isAccessibleForFree, true);
   const minutes = Number(article.timeRequired.match(/^PT(\d+)M$/)?.[1]);
   assert.ok(minutes > 0);
-  assert.ok(html.includes(`Estimated reading time: ${minutes} minutes`));
+  assert.ok(html.includes(`Estimated reading time: ${minutes} ${minutes === 1 ? "minute" : "minutes"}`));
   const sitemapEntry = [...sitemap.matchAll(/<url>([\s\S]*?)<\/url>/g)].find(match => match[1].includes(`<loc>${base}${route}</loc>`));
   assert.ok(sitemapEntry[1].includes(`<lastmod>${article.datePublished}</lastmod>`));
-  assert.ok(html.includes('We spent two weeks testing a spot-lag trading strategy'), 'Article text must be present in static HTML');
   const meta = [...html.matchAll(/<meta\b[^>]*>/g)].map(match => attributes(match[0]));
   const values = key => meta.filter(tag => tag.name === key || tag.property === key).map(tag => tag.content);
   const title = html.match(/<title>(.*?)<\/title>/)[1];
@@ -159,8 +180,8 @@ for (const route of articleLinks) {
   assert.ok(meta.some(tag => tag.name === 'twitter:card' && tag.content === 'summary_large_image'));
   assert.ok(fs.existsSync(path.join(output, article.image.replace(base, ''))));
   const figures = [...html.matchAll(/<figure\b[\s\S]*?<\/figure>/g)].map(match => match[0]);
-  assert.equal(figures.length, 5);
-  assert.equal(figures.join('').match(/<canvas\b/g).length, 6);
+  assert.equal(figures.length, isSpotlag ? 5 : 0);
+  assert.equal((figures.join('').match(/<canvas\b/g) || []).length, isSpotlag ? 6 : 0);
   for (const figure of figures) {
     const canvas = attributes(figure.match(/<canvas\b[^>]*>/)[0]);
     assert.equal(canvas.role, 'img');

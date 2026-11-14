@@ -1,3 +1,4 @@
+import { MakerReactionArticle, makerReactionSource } from "@/content/posts/maker-reaction-function";
 import { SpotlagArticle } from "@/content/posts/spotlag";
 import { organization } from "@/lib/site";
 
@@ -31,9 +32,27 @@ export const posts = [
     ],
     Body: SpotlagArticle,
   },
+  {
+    slug: "maker-reaction-function",
+    date: "2026-10-30",
+    author: { "@type": "Person", name: "Tony Q", jobTitle: "Quantitative Researcher", affiliation: organization },
+    readingMinutes: 32, // Reading time for the complete Chinese original.
+    title: "How Prediction Market Makers React to CME Futures",
+    description: "An English summary of research on prediction-market makers: CME-based reaction times, quote replenishment, and why stale liquidity may not be profitable.",
+    summary: "CME futures as a clock for studying quote cancellations, repricing, and replenishment—and why stale prices can still be unprofitable. Original article in Chinese.",
+    excerpt: "An English summary of research on maker response times, quote replenishment, and the limits of trading stale prices. The original article is in Chinese.",
+    image: "/blog/maker-reaction-function/cover.webp",
+    thumbnail: "/blog/maker-reaction-function/cover-thumbnail.webp",
+    socialImage: "/blog/maker-reaction-function/cover-social.jpg",
+    imageAlt: "Fine lines converge on a blue point against a soft blue and peach background, from the original article.",
+    source: makerReactionSource,
+    sections: [],
+    Body: MakerReactionArticle,
+  },
 ];
 
 export function getPostsNewestFirst() {
+  // Keep editorial order when publication dates match.
   return [...posts].sort((a, b) => b.date.localeCompare(a.date));
 }
 
