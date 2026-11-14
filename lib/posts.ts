@@ -39,8 +39,8 @@ export const posts = [
     readingMinutes: 32, // Reading time for the complete Chinese original.
     title: "How Prediction Market Makers React to CME Futures",
     description: "An English summary of research on prediction-market makers: CME-based reaction times, quote replenishment, and why stale liquidity may not be profitable.",
-    summary: "CME futures as a clock for studying quote cancellations, repricing, and replenishment—and why stale prices can still be unprofitable. Original article in Chinese.",
-    excerpt: "An English summary of research on maker response times, quote replenishment, and the limits of trading stale prices. The original article is in Chinese.",
+    summary: "CME futures as a clock for studying quote cancellations, repricing, and replenishment—and why stale prices can still be unprofitable.",
+    excerpt: "An English summary of research on maker response times, quote replenishment, and the limits of trading stale prices.",
     image: "/blog/maker-reaction-function/cover.webp",
     thumbnail: "/blog/maker-reaction-function/cover-thumbnail.webp",
     socialImage: "/blog/maker-reaction-function/cover-social.jpg",
