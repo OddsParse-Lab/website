@@ -6,8 +6,10 @@ import { useStrategyWheel } from "./use-strategy-wheel";
 import { wheelAppearance, wheelDistance } from "@/lib/strategy-wheel";
 import { strategies } from "@/lib/strategies";
 import { ChronallaxPerformance } from "./chronallax-performance";
+import { AnachronPerformance } from "./anachron-performance";
 
-function StrategyDetails({ name }: { name: (typeof strategies)[number]["name"] }) {
+function StrategyDetails({ name, active }: { name: (typeof strategies)[number]["name"]; active: boolean }) {
+  if (name === "Anachron") return <AnachronPerformance active={active} />;
   if (name === "Chronallax") return <ChronallaxPerformance />;
 
   if (name === "Echo") return <>
@@ -74,7 +76,7 @@ export function StrategyExplorer() {
         <div className="project-panel-top"><span>{item.domain}</span><span className="project-counter">{String(index + 1).padStart(2, "0")} / {String(strategies.length).padStart(2, "0")}</span></div>
         <div className="project-heading"><h2>{item.name}</h2>{item.status && <span className="project-status-badge" data-status={item.status.toLowerCase()}>{item.status}</span>}</div>
         <p className="project-description">{item.description}</p>
-        <StrategyDetails name={item.name} />
+        <StrategyDetails name={item.name} active={selected === index} />
       </section>)}
     </div>
   </main>;
