@@ -68,7 +68,7 @@ export function StrategyExplorer() {
       <p className="strategy-wheel-hint" id="wheel-instructions"><svg viewBox="0 0 16 20" fill="none" aria-hidden="true"><path d="m5 5 3-3 3 3M8 2v16m-3-3 3 3 3-3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" /></svg>Drag or scroll to explore</p>
     </div>
     <div className="strategy-stage" ref={stageRef}>
-      {strategies.map((item, index) => <section key={item.name} id={`project-panel-${index}`} role="tabpanel" aria-labelledby={`project-tab-${index}`} tabIndex={0} hidden={selected !== index} className="project-panel">
+      {strategies.map((item, index) => <section key={item.name} id={`project-panel-${index}`} role="tabpanel" aria-labelledby={`project-tab-${index}`} tabIndex={0} hidden={selected !== index} aria-hidden={selected !== index} inert={selected !== index} className="project-panel">
         <div className="project-panel-top"><span>{item.domain}</span><span className="project-counter">{String(index + 1).padStart(2, "0")} / {String(strategies.length).padStart(2, "0")}</span></div>
         <div className="project-heading"><h2>{item.name}</h2><span className="project-status-badge" data-status={item.status.toLowerCase()}>{item.status}</span></div>
         <p className="project-description">{item.description}</p>

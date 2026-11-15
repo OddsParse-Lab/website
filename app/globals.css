@@ -151,7 +151,11 @@ h1 { margin: 0; font-size: clamp(36px, 4.3vw, 68px); line-height: 1.12; font-wei
 }
 @media (max-width: 760px) {
   .strategy-lab { --strategy-height: 430px; display: flex; flex-direction: column; align-items: stretch; gap: 25px; width: calc(100% - 48px); padding: 8px 0 38px; }
-  .strategy-selector { width: 100%; max-width: 420px; align-self: center; }
+  .strategy-selector { order: 1; width: 100%; max-width: 420px; align-self: center; }
+  /* Reserve the tallest detail so switching cannot move the wheel under a finger. */
+  .strategy-stage { display: grid; }
+  .strategy-stage .project-panel { grid-area: 1 / 1; min-width: 0; }
+  .strategy-stage .project-panel[hidden] { display: flex; visibility: hidden; pointer-events: none; }
   .strategy-wheel { --wheel-step: 54px; --wheel-font-size: 28px; height: 210px; overflow: clip; mask-image: linear-gradient(to bottom, transparent 0%, #000 25%, #000 75%, transparent 100%); }
   .strategy-wheel-item { left: max(26px, calc(50% - 112px)); }
   .strategy-wheel-guide { left: max(0px, calc(50% - 148px)); }
