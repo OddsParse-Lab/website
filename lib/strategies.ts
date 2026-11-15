@@ -1,5 +1,5 @@
 export const strategies = [
-  { name: "Anachron", status: null, category: "Market making", domain: "Event contract market making", description: "A market-making engine that identifies systematic mispricing in event contracts and provides liquidity against it." },
+  { name: "Anachron", status: "Live", category: "Market making", domain: "Event contract market making", description: "A market-making engine that identifies systematic mispricing in event contracts and provides liquidity against it." },
   { name: "Chronallax", status: "Live", category: "Ultra-high-frequency arbitrage", domain: "Quantitative arbitrage", description: "An ultra-high-frequency spread arbitrage engine that detects pricing inconsistencies across related event contracts and locks in the spread within milliseconds." },
   { name: "Echo", status: "Archived", category: "Prediction models", domain: "Prediction markets", description: "An in-house pricing model for prediction markets." },
   { name: "Heimdall", status: "Archived", category: "Market intelligence", domain: "News & language models", description: "Monitoring market news and using LLMs to understand what matters, how fresh it is, and whether it is already priced in." },

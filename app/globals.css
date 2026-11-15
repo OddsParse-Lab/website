@@ -121,7 +121,8 @@ h1 { margin: 0; font-size: clamp(36px, 4.3vw, 68px); line-height: 1.12; font-wei
 .strategy-stage .project-status-badge[data-status="live"] { color: #5d6468; }
 .strategy-stage .project-status-badge[data-status="live"]::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #575e62; }
 .strategy-stage .project-description { margin-top: 17px; max-width: 520px; font-size: 15px; line-height: 1.65; color: #71777b; }
-.strategy-stage .chronallax-result { margin: 34px 0 28px; }
+.strategy-stage .project-description:has(+ .chronallax-result) { margin-bottom: 0; }
+.strategy-stage .chronallax-result { margin: 20px 0 28px; }
 .strategy-stage .chronallax-returns { gap: 18px; }
 .strategy-stage .chronallax-returns .result-label { min-height: 0; font-size: 12px; }
 .strategy-stage .chronallax-returns .result-number { margin-top: 10px; font-size: clamp(28px, 11cqw, 64px); }
@@ -163,7 +164,7 @@ h1 { margin: 0; font-size: clamp(36px, 4.3vw, 68px); line-height: 1.12; font-wei
   .strategy-stage .project-heading { margin-top: 22px; }
   .strategy-stage .project-heading h2 { font-size: 38px; }
   .strategy-stage .project-description { font-size: 14px; }
-  .strategy-stage .chronallax-result { margin: 28px 0 24px; }
+  .strategy-stage .chronallax-result { margin: 18px 0 24px; }
   .strategy-stage .chronallax-metrics { gap: 12px; margin-bottom: 25px; }
   .strategy-stage .chronallax-metrics dt { font-size: 10px; }
   .strategy-stage .chronallax-metrics dd { font-size: 20px; }
@@ -173,7 +174,7 @@ h1 { margin: 0; font-size: clamp(36px, 4.3vw, 68px); line-height: 1.12; font-wei
   .strategy-lab { --strategy-height: 435px; padding-top: 10px; padding-bottom: 30px; }
   .strategy-wheel { --wheel-step: 56px; height: 370px; }
   .strategy-stage .project-heading { margin-top: 20px; }
-  .strategy-stage .chronallax-result { margin: 25px 0 20px; }
+  .strategy-stage .chronallax-result { margin: 18px 0 20px; }
   .strategy-stage .chronallax-metrics { margin-bottom: 24px; }
   .strategy-stage .research-steps { margin-top: 15px; }
   .strategy-stage .research-steps li { padding-top: 11px; padding-bottom: 11px; }

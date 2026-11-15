@@ -75,7 +75,8 @@ for (const route of routes) {
       assert.ok(panel.includes(`${String(index + 1).padStart(2, '0')}<!-- --> / <!-- -->${String(names.length).padStart(2, '0')}`), `${name}: correct strategy counter`);
       assert.ok(!panel.includes('Live performance data will be published here.'));
       if (name === 'Anachron') {
-        assert.ok(!panel.includes('project-status-badge'), 'Do not invent an operational status for a new strategy');
+        assert.equal(panel.match(/<span class="project-status-badge"[^>]*>(.*?)<\/span>/)?.[1], 'Live');
+        assert.equal(list.itemListElement[index].item.creativeWorkStatus, 'Live');
         assert.ok(!panel.includes('result-number') && !panel.includes('research-steps'), 'New strategy must not inherit another strategy’s data or workflow');
       } else {
         assert.equal(panel.match(/<span class="project-status-badge"[^>]*>(.*?)<\/span>/)?.[1], name === 'Chronallax' ? 'Live' : 'Archived');
