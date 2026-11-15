@@ -1,26 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Chart as ChartJS, LinearScale, LineController, LineElement, PointElement, Filler, Tooltip, type ChartOptions, type Plugin } from "chart.js";
+import { Chart as ChartJS, LinearScale, LineController, LineElement, PointElement, Filler, type ChartOptions, type Plugin } from "chart.js";
 import { Line } from "react-chartjs-2";
 import type { AnachronStats } from "@/lib/anachron-stats";
 
-ChartJS.register(LinearScale, LineController, LineElement, PointElement, Filler, Tooltip);
+ChartJS.register(LinearScale, LineController, LineElement, PointElement, Filler);
 
 const FONT = '"DM Sans", Arial, sans-serif';
 const date = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 const time = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "UTC" });
-const crosshair: Plugin<"line"> = {
-  id: "anachron-crosshair",
-  afterDatasetsDraw(chart) {
-    const active = chart.getActiveElements()[0];
-    if (!active) return;
-    const { ctx, chartArea } = chart, { x } = active.element;
+const zeroBaseline: Plugin<"line"> = {
+  id: "anachron-zero-baseline",
+  beforeDatasetsDraw({ ctx, chartArea, scales }) {
+    const y = scales.y.getPixelForValue(0);
     ctx.save();
-    ctx.strokeStyle = "#aeb3b6";
+    ctx.strokeStyle = "#dce0e2";
     ctx.lineWidth = 1;
-    ctx.setLineDash([3, 4]);
-    ctx.beginPath(); ctx.moveTo(x, chartArea.top); ctx.lineTo(x, chartArea.bottom); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(chartArea.left, y); ctx.lineTo(chartArea.right, y); ctx.stroke();
     ctx.restore();
   },
 };
@@ -38,8 +35,6 @@ export function AnachronChart({ points }: { points: AnachronStats["curve"] }) {
     borderColor: "#373d40", borderWidth: 1.8, borderCapStyle: "round" as const,
     borderJoinStyle: "round" as const, cubicInterpolationMode: "monotone" as const,
     fill: "origin", pointRadius: points.length === 1 ? 3 : 0,
-    pointHoverRadius: 4, pointHoverBackgroundColor: "#373d40",
-    pointHoverBorderColor: "#fff", pointHoverBorderWidth: 2, pointHitRadius: 16,
     backgroundColor: ({ chart }: { chart: ChartJS }) => {
       if (!chart.chartArea) return "transparent";
       const gradient = chart.ctx.createLinearGradient(0, chart.chartArea.top, 0, chart.chartArea.bottom);
@@ -62,7 +57,7 @@ export function AnachronChart({ points }: { points: AnachronStats["curve"] }) {
       responsive: true, maintainAspectRatio: false, parsing: false, normalized: true,
       animation: reducedMotion ? false : { duration: 700, easing: "easeOutQuart" },
       transitions: { resize: { animation: { duration: 0 } } },
-      interaction: { mode: "nearest", intersect: false, axis: "x" },
+      events: [],
       layout: { padding: { top: 6, right: 4 } },
       scales: {
         x: { type: "linear", min: first, max: last === first ? first + 3600000 : last,
@@ -75,18 +70,10 @@ export function AnachronChart({ points }: { points: AnachronStats["curve"] }) {
       },
       plugins: {
         legend: { display: false },
-        tooltip: {
-          displayColors: false, backgroundColor: "#24282b", titleColor: "#fff", bodyColor: "#d8dcde",
-          titleFont: { family: FONT, size: 11, weight: 500 }, bodyFont: { family: FONT, size: 11 },
-          padding: 10, cornerRadius: 5, caretSize: 4,
-          callbacks: {
-            title: items => items.length ? `${date.format(items[0].parsed.x!)} · ${time.format(items[0].parsed.x!)} UTC` : "",
-            label: () => "",
-          },
-        },
+        tooltip: { enabled: false },
       },
     };
   }, [points, reducedMotion]);
-  return <Line data={data} options={options} plugins={[crosshair]} role="img"
+  return <Line data={data} options={options} plugins={[zeroBaseline]} role="img"
     aria-label={`Anachron settled profit trend from ${date.format(points[0].x)} to ${date.format(points[points.length - 1].x)}.`} />;
 }
