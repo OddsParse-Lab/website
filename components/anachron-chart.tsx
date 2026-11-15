@@ -49,6 +49,8 @@ export function AnachronChart({ points }: { points: AnachronStats["curve"] }) {
     const low = points.reduce((min, point) => Math.min(min, point.y), 0);
     const high = points.reduce((max, point) => Math.max(max, point.y), 0);
     const minimum = Math.floor(low / 25) * 25, maximum = Math.ceil(high / 25) * 25 || (low === 0 ? 25 : 0);
+    // Keep the full stroke inside the plot, including peaks exactly on a scale bound.
+    const verticalPadding = (maximum - minimum) * 0.08;
     const hours = [1, 3, 6, 12, 24, 48, 168, 336, 720, 2160, 8760];
     const xStep = (hours.find(hours => (last - first) / (hours * 3600000) <= 4) ?? 8760) * 3600000;
     const xTicks: number[] = [];
@@ -66,7 +68,7 @@ export function AnachronChart({ points }: { points: AnachronStats["curve"] }) {
           ticks: { maxTicksLimit: 4, maxRotation: 0, color: "#949a9e", padding: 8, font: { family: FONT, size: 10 },
             callback: value => intraday ? time.format(Number(value)) : date.format(Number(value)) },
         },
-        y: { type: "linear", display: false, min: minimum, max: maximum },
+        y: { type: "linear", display: false, min: minimum - verticalPadding, max: maximum + verticalPadding },
       },
       plugins: {
         legend: { display: false },
