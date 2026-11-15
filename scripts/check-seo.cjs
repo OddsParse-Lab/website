@@ -5,7 +5,7 @@ const path = require('node:path');
 // Check the actual export, not just metadata configuration or React source.
 const output = path.join(__dirname, '../out');
 const base = 'https://www.oddsparse.trade';
-const routes = ['/', '/projects/', '/about/', '/blog/', '/contact/'];
+const routes = ['/', '/strategies/', '/about/', '/blog/', '/contact/'];
 const articleRoutes = ['/blog/kalshi-longshot-bias/', '/blog/one-second-behind/', '/blog/maker-reaction-function/'];
 const titles = new Set();
 const descriptions = new Set();
@@ -29,6 +29,10 @@ for (const route of routes) {
   assert.deepEqual(meta('twitter:description'), meta('description'));
   assert.deepEqual(meta('og:image'), [`${base}/brand/logo.png`]);
   assert.ok(meta('robots').some(value => value.includes('index') && !value.includes('noindex')));
+  const nav = html.match(/<nav class="main-nav"[\s\S]*?<\/nav>/)?.[0];
+  assert.ok(nav.includes('href="/strategies/"'), 'Main navigation must use the new route');
+  assert.ok(nav.includes('>Strategies</a>'));
+  assert.ok(!nav.includes('/projects'), 'Main navigation must not point at the legacy URL');
   const title = head.match(/<title>(.*?)<\/title>/)[1];
   assert.deepEqual(meta('og:title'), [title]);
   assert.deepEqual(meta('twitter:title'), [title]);
@@ -52,20 +56,25 @@ for (const route of routes) {
     assert.deepEqual(breadcrumbs.itemListElement.map(item => item.item), [`${base}/`, `${base}${route}`]);
   }
 
-  if (route === '/projects/') {
+  if (route === '/strategies/') {
+    assert.ok(html.includes('<h1 class="sr-only">Trading strategies and research systems</h1>'));
+    assert.equal(nodes.find(node => node['@type'] === 'BreadcrumbList').itemListElement[1].name, 'Strategies');
+    assert.equal(nodes.find(node => node['@type'] === 'CollectionPage').mainEntity['@id'], base + '/strategies/#strategies');
+    const strategyLink = [...nav.matchAll(/<a\b[^>]*>/g)].map(match => attributes(match[0])).find(link => link.href === '/strategies/');
+    assert.equal(strategyLink?.['aria-current'], 'page');
     const names = ['Chronallax', 'Echo', 'Heimdall', 'Parallax'];
     const details = ['Average daily return', 'Development-stage result', 'Time-decayed information weighting.', 'Embedding models shortlist markets with similar underlying questions.'];
     const list = nodes.find(node => node['@type'] === 'ItemList');
     assert.deepEqual(list.itemListElement.map(entry => entry.item.name), names);
     assert.equal(list.numberOfItems, names.length);
-    assert.ok(!html.includes('Torsion'), 'Removed projects must not appear in the exported page or schema');
+    assert.ok(!html.includes('Torsion'), 'Removed strategies must not appear in the exported page or schema');
     names.forEach((name, index) => {
       const panel = html.match(new RegExp(`<section\\b[^>]*id="project-panel-${index}"[^>]*>[\\s\\S]*?<\\/section>`))?.[0];
       assert.ok(panel, `${name}: exported panel must exist`);
       assert.ok(panel.includes(`<h2>${name}</h2>`), `${name}: content must render without clicking or JavaScript`);
-      assert.ok(panel.includes(`${String(index + 1).padStart(2, '0')}<!-- --> / <!-- -->${String(names.length).padStart(2, '0')}`), `${name}: correct project counter`);
+      assert.ok(panel.includes(`${String(index + 1).padStart(2, '0')}<!-- --> / <!-- -->${String(names.length).padStart(2, '0')}`), `${name}: correct strategy counter`);
       assert.ok(!panel.includes('Live performance data will be published here.'));
-      assert.ok(panel.includes(`<span class="project-status-badge">${name === 'Chronallax' ? 'Live' : 'Archived'}</span>`));
+      assert.equal(panel.match(/<span class="project-status-badge"[^>]*>(.*?)<\/span>/)?.[1], name === 'Chronallax' ? 'Live' : 'Archived');
       if (name === 'Chronallax') {
         assert.match(panel, /<span class="result-label">Average daily return<\/span>/);
         assert.ok(!panel.includes('21.36'), 'Do not present an old static return as live data');
@@ -94,6 +103,18 @@ assert.ok(robots.includes(`Sitemap: ${base}/sitemap.xml`));
 assert.ok(!/Disallow:\s*\/(?:\s|$)/i.test(robots));
 assert.ok(fs.existsSync(path.join(output, 'brand/logo.png')));
 console.log('PASS sitemap, robots.txt, and public brand image');
+const legacy = fs.readFileSync(path.join(output, 'projects/index.html'), 'utf8');
+assert.ok(legacy.includes('rel="canonical" href="https://www.oddsparse.trade/strategies/"'));
+assert.ok(/name="robots" content="[^"]*noindex/.test(legacy));
+assert.ok(/<noscript><meta http-equiv="refresh" content="0;url=\/strategies\/"\/><\/noscript>/.test(legacy), 'Legacy page must redirect without JavaScript');
+assert.ok(!legacy.includes('id="project-panel-0"'), 'Legacy page must not duplicate strategy content');
+assert.ok(!sitemap.includes(base + '/projects/'));
+const redirects = JSON.parse(fs.readFileSync(path.join(__dirname, '../vercel.json'), 'utf8')).redirects;
+for (const source of ['/projects', '/projects/']) {
+  assert.ok(redirects.some(rule => rule.source === source && rule.destination === '/strategies/' && rule.permanent === true));
+}
+console.log('PASS strategies migration: navigation, permanent redirects, fallback, and sitemap');
+
 
 const blog = fs.readFileSync(path.join(output, 'blog/index.html'), 'utf8');
 const articleLinks = [...new Set([...blog.matchAll(/href="(\/blog\/[^"/]+\/)"/g)].map(match => match[1]))];

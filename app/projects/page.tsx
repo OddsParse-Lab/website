@@ -1,21 +1,19 @@
 import { SiteShell } from "@/components/site-shell";
-import { ProjectExplorer } from "@/components/project-explorer";
-import { StructuredData } from "@/components/structured-data";
-import { pageMetadata, pageSchema, site } from "@/lib/site";
-import { projects } from "@/lib/projects";
+import { pageMetadata } from "@/lib/site";
+import { ProjectsRedirect } from "./redirect";
 
-const description = "Explore Chronallax, Echo, Heimdall, and Parallax: arbitrage research, prediction models, market intelligence, and cross-platform market matching.";
-export const metadata = pageMetadata("Quantitative Research Projects", description, "/projects/");
+export const metadata = {
+  ...pageMetadata("Strategies", "Explore OddsParse Lab’s quantitative trading strategies and research systems.", "/strategies/"),
+  robots: { index: false, follow: true, googleBot: { index: false, follow: true } },
+};
 
-const structuredData = pageSchema("CollectionPage", "Projects", description, "/projects/");
-
-export default function Projects() {
-  return <SiteShell activePage="projects">
-    <StructuredData data={{ ...structuredData, "@graph": [
-      { ...structuredData["@graph"][0], mainEntity: { "@id": `${site.url}/projects/#research-projects` } },
-      structuredData["@graph"][1],
-      { "@type": "ItemList", "@id": `${site.url}/projects/#research-projects`, name: "OddsParse Lab research projects", numberOfItems: projects.length, itemListElement: projects.map((project, index) => ({ "@type": "ListItem", position: index + 1, item: { "@type": "CreativeWork", name: project.name, description: project.description, creativeWorkStatus: project.status, creator: { "@id": `${site.url}/#organization` } } })) },
-    ] }} />
-    <ProjectExplorer />
+// Vercel serves an HTTP redirect. This page keeps standalone static exports working.
+export default function LegacyProjects() {
+  return <SiteShell activePage="strategies">
+    <ProjectsRedirect />
+    <noscript><meta httpEquiv="refresh" content="0;url=/strategies/" /></noscript>
+    <main id="main" className="strategy-redirect">
+      <div><h1>Strategies.</h1><p>This page has moved to <a href="/strategies/">Strategies</a>.</p></div>
+    </main>
   </SiteShell>;
 }

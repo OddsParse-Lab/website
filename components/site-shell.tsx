@@ -4,7 +4,7 @@ export function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={diagonal ? "M6 18 18 6M6 6h12v12" : "M4 12h15m-6-6 6 6-6 6"} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
 
-export function SiteShell({ children, activePage = "home", article = false }: { children: React.ReactNode; activePage?: "home" | "projects" | "about" | "blog" | "contact"; article?: boolean }) {
+export function SiteShell({ children, activePage = "home", article = false }: { children: React.ReactNode; activePage?: "home" | "strategies" | "about" | "blog" | "contact"; article?: boolean }) {
   return <div className={`site-shell${article ? " site-shell-article" : ""}`}>
     <a className="skip-link" href="#main">Skip to content</a>
     <header className="site-header">
@@ -14,7 +14,7 @@ export function SiteShell({ children, activePage = "home", article = false }: { 
       </Link>
       <nav className="main-nav" aria-label="Main navigation">
         <Link href="/" className="nav-link" aria-current={activePage === "home" ? "page" : undefined}>Home</Link>
-        <Link href="/projects" className="nav-link" aria-current={activePage === "projects" ? "page" : undefined}>Projects</Link>
+        <Link href="/strategies/" className="nav-link" aria-current={activePage === "strategies" ? "page" : undefined}>Strategies</Link>
         <Link href="/blog" className="nav-link" aria-current={activePage === "blog" ? "page" : undefined}>Blog</Link>
         <Link href="/about" className="nav-link" aria-current={activePage === "about" ? "page" : undefined}>About</Link>
         <Link href="/contact" className="nav-link" aria-current={activePage === "contact" ? "page" : undefined}>Contact</Link>
