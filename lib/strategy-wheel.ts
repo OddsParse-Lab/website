@@ -30,11 +30,13 @@ export function wheelAppearance(distance: number, expansion = 0) {
   const angle = Math.max(-.8, Math.min(.8, distance * .22));
   const spread = 1 + expansion * .14;
   const abs = Math.abs(distance);
+  const focus = Math.exp(-abs * abs * .85);
   return {
     x: -(1 - Math.cos(angle)) / .22 * .85 * spread,
     y: Math.sin(angle) / .22 * spread,
     angle: distance * 4,
-    scale: (1 + expansion * .4) * (1 - Math.min(abs, 3) * .025),
+    // Magnification follows the moving center, rather than enlarging the whole list.
+    scale: .76 + .24 * focus + expansion * .4 * Math.pow(focus, 1.4),
     opacity: Math.max(0, 1 - abs * .44),
     blur: Math.min(4.5, Math.pow(abs, 1.2) * 1.6),
   };
