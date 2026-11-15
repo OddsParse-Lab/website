@@ -28,12 +28,14 @@ function StrategyDetails({ name }: { name: (typeof strategies)[number]["name"] }
     </ol>
   </>;
 
-  return <ol className="research-steps" aria-label="Market matching, monitoring, and trading workflow">
+  if (name === "Parallax") return <ol className="research-steps" aria-label="Market matching, monitoring, and trading workflow">
     <li><span className="step-number">01</span><div><h3>Discover</h3><p>Embedding models shortlist markets with similar underlying questions.</p></div></li>
     <li><span className="step-number">02</span><div><h3>Review</h3><p>LLMs compare resolution criteria to assess whether contracts refer to the same outcome.</p></div></li>
     <li><span className="step-number">03</span><div><h3>Monitor</h3><p>Track price spreads across matched markets as quotes change.</p></div></li>
     <li><span className="step-number">04</span><div><h3>Execute</h3><p>Place orders on matched markets across supported platforms.</p></div></li>
   </ol>;
+
+  return null;
 }
 
 export function StrategyExplorer() {
@@ -70,7 +72,7 @@ export function StrategyExplorer() {
     <div className="strategy-stage" ref={stageRef}>
       {strategies.map((item, index) => <section key={item.name} id={`project-panel-${index}`} role="tabpanel" aria-labelledby={`project-tab-${index}`} tabIndex={0} hidden={selected !== index} aria-hidden={selected !== index} inert={selected !== index} className="project-panel">
         <div className="project-panel-top"><span>{item.domain}</span><span className="project-counter">{String(index + 1).padStart(2, "0")} / {String(strategies.length).padStart(2, "0")}</span></div>
-        <div className="project-heading"><h2>{item.name}</h2><span className="project-status-badge" data-status={item.status.toLowerCase()}>{item.status}</span></div>
+        <div className="project-heading"><h2>{item.name}</h2>{item.status && <span className="project-status-badge" data-status={item.status.toLowerCase()}>{item.status}</span>}</div>
         <p className="project-description">{item.description}</p>
         <StrategyDetails name={item.name} />
       </section>)}

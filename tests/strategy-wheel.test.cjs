@@ -16,7 +16,7 @@ function simulate(hz, position = .3, velocity = 0, target = 1) {
 }
 
 test('continuous navigation wraps in both directions without a last-item barrier', () => {
-  for (const count of [1, 4, 17, 50]) {
+  for (const count of [1, 4, 5, 17, 50]) {
     for (let step = -count * 4; step <= count * 4; step++) {
       const index = wrapIndex(step, count);
       assert.ok(index >= 0 && index < count);

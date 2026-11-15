@@ -62,8 +62,8 @@ for (const route of routes) {
     assert.equal(nodes.find(node => node['@type'] === 'CollectionPage').mainEntity['@id'], base + '/strategies/#strategies');
     const strategyLink = [...nav.matchAll(/<a\b[^>]*>/g)].map(match => attributes(match[0])).find(link => link.href === '/strategies/');
     assert.equal(strategyLink?.['aria-current'], 'page');
-    const names = ['Chronallax', 'Echo', 'Heimdall', 'Parallax'];
-    const details = ['Average daily return', 'Development-stage result', 'Time-decayed information weighting.', 'Embedding models shortlist markets with similar underlying questions.'];
+    const names = ['Anachron', 'Chronallax', 'Echo', 'Heimdall', 'Parallax'];
+    const details = ['A market-making engine that identifies systematic mispricing in event contracts and provides liquidity against it.', 'Average daily return', 'Development-stage result', 'Time-decayed information weighting.', 'Embedding models shortlist markets with similar underlying questions.'];
     const list = nodes.find(node => node['@type'] === 'ItemList');
     assert.deepEqual(list.itemListElement.map(entry => entry.item.name), names);
     assert.equal(list.numberOfItems, names.length);
@@ -74,8 +74,14 @@ for (const route of routes) {
       assert.ok(panel.includes(`<h2>${name}</h2>`), `${name}: content must render without clicking or JavaScript`);
       assert.ok(panel.includes(`${String(index + 1).padStart(2, '0')}<!-- --> / <!-- -->${String(names.length).padStart(2, '0')}`), `${name}: correct strategy counter`);
       assert.ok(!panel.includes('Live performance data will be published here.'));
-      assert.equal(panel.match(/<span class="project-status-badge"[^>]*>(.*?)<\/span>/)?.[1], name === 'Chronallax' ? 'Live' : 'Archived');
+      if (name === 'Anachron') {
+        assert.ok(!panel.includes('project-status-badge'), 'Do not invent an operational status for a new strategy');
+        assert.ok(!panel.includes('result-number') && !panel.includes('research-steps'), 'New strategy must not inherit another strategy’s data or workflow');
+      } else {
+        assert.equal(panel.match(/<span class="project-status-badge"[^>]*>(.*?)<\/span>/)?.[1], name === 'Chronallax' ? 'Live' : 'Archived');
+      }
       if (name === 'Chronallax') {
+        assert.ok(panel.includes('An ultra-high-frequency spread arbitrage engine that detects pricing inconsistencies across related event contracts and locks in the spread within milliseconds.'));
         assert.match(panel, /<span class="result-label">Average daily return<\/span>/);
         assert.ok(!panel.includes('21.36'), 'Do not present an old static return as live data');
         for (const metric of ['39.3', '2.6', '98,408', 'p50', 'Loading performance data', 'Cumulative return', 'peak capital in use']) assert.ok(panel.includes(metric));
