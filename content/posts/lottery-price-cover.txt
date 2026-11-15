@@ -1,0 +1,11 @@
+Cover for “Are Cheap Kalshi Contracts a Bargain?”
+
+Generated with the built-in image_gen tool. Conceptual editorial illustration, not a data visualization.
+
+Project assets:
+/Users/clck/Desktop/Workspace/oddsparse-web/public/blog/kalshi-longshot-bias/cover.webp (1920 × 800)
+/Users/clck/Desktop/Workspace/oddsparse-web/public/blog/kalshi-longshot-bias/cover-thumbnail.webp (768 × 512)
+/Users/clck/Desktop/Workspace/oddsparse-web/public/blog/kalshi-longshot-bias/cover-social.jpg (1200 × 630)
+
+Prompt:
+Create a refined, abstract editorial cover for an independent quantitative research article on probability and the price of long shots. Wide panoramic composition, 2.4:1 aspect ratio. A field of tiny matte graphite spheres laid out in precise parallel rows on a softly lit pale blue-gray plane; at the center a small number of translucent pale-blue glass spheres subtly magnify and refract the same grid, suggesting that rare outcomes look larger than they are. High-end photographic still life with tactile materials, restrained sculptural geometry, soft directional daylight, beautiful elongated shadows and generous negative space. Cool slate, charcoal, translucent desaturated blue, off-white. Quiet and sophisticated, matching contemporary research-lab editorial imagery. Main subject contained within the central half of the composition so a centered 3:2 crop also works. No text, no labels, no letters, no numbers, no logo, no chart, no recognizable financial symbols, no coins, no gambling paraphernalia. This is conceptual illustration, not a data visualization.

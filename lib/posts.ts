@@ -1,8 +1,35 @@
+import { LotteryPriceArticle } from "@/content/posts/lottery-price";
 import { MakerReactionArticle, makerReactionSource } from "@/content/posts/maker-reaction-function";
 import { SpotlagArticle } from "@/content/posts/spotlag";
 import { organization } from "@/lib/site";
 
 export const posts = [
+  {
+    slug: "kalshi-longshot-bias",
+    date: "2026-11-14",
+    author: { "@type": "Person", name: "Kevin Z", jobTitle: "Quantitative Researcher", affiliation: organization },
+    readingMinutes: 9, // Main text, summary table, and figure captions at approximately 200 words/minute.
+    title: "Are Cheap Kalshi Contracts a Bargain?",
+    description: "An analysis of 107.7 million Kalshi BTC and ETH trades: observed win rates, fee-adjusted payouts, and longshot pricing in hourly crypto prediction markets.",
+    summary: "What 107.7 million BTC and ETH trades reveal about low-priced contracts, settlement probabilities, and the cost of a long shot.",
+    excerpt: "We studied 107.7 million trades in Kalshi’s hourly Bitcoin and Ethereum markets. Low-priced contracts offered large payout multiples—but did they win often enough to justify the price?",
+    image: "/blog/kalshi-longshot-bias/cover.webp",
+    thumbnail: "/blog/kalshi-longshot-bias/cover-thumbnail.webp",
+    socialImage: "/blog/kalshi-longshot-bias/cover-social.jpg",
+    imageAlt: "Translucent blue glass spheres magnify a grid of small graphite spheres, an abstract illustration of rare outcomes appearing larger than they are.",
+    sections: [
+      { id: "article-overview", label: "Overview" },
+      { id: "sample", label: "The sample" },
+      { id: "breakeven", label: "Breaking even" },
+      { id: "results", label: "Prices & payouts" },
+      { id: "interpretation", label: "The longshot pattern" },
+      { id: "stability", label: "Stability over time" },
+      { id: "limitations", label: "Limitations" },
+      { id: "conclusion", label: "Conclusion" },
+      { id: "tables", label: "Data tables" },
+    ],
+    Body: LotteryPriceArticle,
+  },
   {
     slug: "one-second-behind",
     date: "2026-10-30",

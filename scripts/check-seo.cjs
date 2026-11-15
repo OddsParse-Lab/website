@@ -6,7 +6,7 @@ const path = require('node:path');
 const output = path.join(__dirname, '../out');
 const base = 'https://www.oddsparse.trade';
 const routes = ['/', '/projects/', '/about/', '/blog/', '/contact/'];
-const articleRoutes = ['/blog/one-second-behind/', '/blog/maker-reaction-function/'];
+const articleRoutes = ['/blog/kalshi-longshot-bias/', '/blog/one-second-behind/', '/blog/maker-reaction-function/'];
 const titles = new Set();
 const descriptions = new Set();
 
@@ -116,6 +116,8 @@ for (const route of articleLinks) {
   assert.ok(!html.includes('Draft preview'));
   assert.ok(!/polytest|a friend|friend’s experiment|Sample content/i.test(html));
   const isSpotlag = route === '/blog/one-second-behind/';
+  const isLottery = route === '/blog/kalshi-longshot-bias/';
+  const isMaker = route === '/blog/maker-reaction-function/';
   if (isSpotlag) {
     assert.ok(html.includes('approximately ten-hour local event-study sample'));
     assert.ok(html.includes('unrounded per-contract approximation'));
@@ -124,6 +126,17 @@ for (const route of articleLinks) {
     assert.ok(html.includes('−$26.16'));
     assert.ok(html.includes('1,029 / 935'));
     assert.ok(html.includes('We spent two weeks testing a spot-lag trading strategy'), 'Article text must be present in static HTML');
+  } else if (isLottery) {
+    assert.ok(html.includes('A contract costs three cents.'));
+    assert.ok(html.includes('101,196,991 BTC trades and 6,490,946 ETH trades'));
+    assert.ok(html.includes('standardized cost model'));
+    assert.ok(html.includes('$0.677 [0.618, 0.736]'));
+    assert.ok(html.includes('$0.738 [0.564, 0.947]'));
+    assert.ok(html.includes('not a release of the underlying trade-by-trade records'));
+    assert.equal((html.match(/<details>/g) || []).length, 4, 'Publish all four expandable data appendices');
+    assert.ok(html.includes('<math xmlns="http://www.w3.org/1998/Math/MathML"'));
+    assert.ok(!html.includes('class="katex-error"'));
+    assert.ok(!/s3:\/\/|T251114|编辑说明|未发布/.test(html), 'Internal source notes must not be published');
   } else {
     assert.ok(html.includes('Using CME futures as an external clock'), 'Summary must render in static HTML');
     assert.ok(html.includes('This is an English summary.'));
@@ -140,8 +153,8 @@ for (const route of articleLinks) {
   const article = nodes.find(node => node['@type'] === 'BlogPosting');
   assert.equal(article.url, `${base}${route}`);
   assert.equal(article.author['@type'], 'Person');
-  assert.equal(article.author.name, isSpotlag ? 'Kevin Z' : 'Tony Q');
-  if (!isSpotlag) {
+  assert.equal(article.author.name, isMaker ? 'Tony Q' : 'Kevin Z');
+  if (isMaker) {
     assert.equal(article.isBasedOn.url, 'https://imfuyuqiu.com/blog/maker-reaction-function/');
     assert.equal(article.isBasedOn.inLanguage, 'zh');
     assert.equal(article.isBasedOn.datePublished, '2026-10-30');
@@ -180,8 +193,8 @@ for (const route of articleLinks) {
   assert.ok(meta.some(tag => tag.name === 'twitter:card' && tag.content === 'summary_large_image'));
   assert.ok(fs.existsSync(path.join(output, article.image.replace(base, ''))));
   const figures = [...html.matchAll(/<figure\b[\s\S]*?<\/figure>/g)].map(match => match[0]);
-  assert.equal(figures.length, isSpotlag ? 5 : 0);
-  assert.equal((figures.join('').match(/<canvas\b/g) || []).length, isSpotlag ? 6 : 0);
+  assert.equal(figures.length, isSpotlag ? 5 : isLottery ? 2 : 0);
+  assert.equal((figures.join('').match(/<canvas\b/g) || []).length, isSpotlag ? 6 : isLottery ? 2 : 0);
   for (const figure of figures) {
     const canvas = attributes(figure.match(/<canvas\b[^>]*>/)[0]);
     assert.equal(canvas.role, 'img');
