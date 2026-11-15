@@ -10,7 +10,6 @@ ChartJS.register(LinearScale, LineController, LineElement, PointElement, Filler,
 const FONT = '"DM Sans", Arial, sans-serif';
 const date = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 const time = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "UTC" });
-const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 const crosshair: Plugin<"line"> = {
   id: "anachron-crosshair",
   afterDatasetsDraw(chart) {
@@ -35,7 +34,7 @@ export function AnachronChart({ points }: { points: AnachronStats["curve"] }) {
     return () => media.removeEventListener("change", update);
   }, []);
   const data = useMemo(() => ({ datasets: [{
-    label: "Normalized settled P&L", data: points,
+    label: "Settled performance", data: points,
     borderColor: "#373d40", borderWidth: 1.8, borderCapStyle: "round" as const,
     borderJoinStyle: "round" as const, cubicInterpolationMode: "monotone" as const,
     fill: "origin", pointRadius: points.length === 1 ? 3 : 0,
@@ -55,9 +54,6 @@ export function AnachronChart({ points }: { points: AnachronStats["curve"] }) {
     const low = points.reduce((min, point) => Math.min(min, point.y), 0);
     const high = points.reduce((max, point) => Math.max(max, point.y), 0);
     const minimum = Math.floor(low / 25) * 25, maximum = Math.ceil(high / 25) * 25 || (low === 0 ? 25 : 0);
-    const yStep = maximum - minimum > 75 ? 50 : 25;
-    const yTicks = new Set([minimum, maximum]);
-    for (let value = Math.ceil(minimum / yStep) * yStep; value <= maximum; value += yStep) yTicks.add(value);
     const hours = [1, 3, 6, 12, 24, 48, 168, 336, 720, 2160, 8760];
     const xStep = (hours.find(hours => (last - first) / (hours * 3600000) <= 4) ?? 8760) * 3600000;
     const xTicks: number[] = [];
@@ -75,11 +71,7 @@ export function AnachronChart({ points }: { points: AnachronStats["curve"] }) {
           ticks: { maxTicksLimit: 4, maxRotation: 0, color: "#949a9e", padding: 8, font: { family: FONT, size: 10 },
             callback: value => intraday ? time.format(Number(value)) : date.format(Number(value)) },
         },
-        y: { type: "linear", position: "right", min: minimum, max: maximum,
-          afterBuildTicks: scale => { scale.ticks = [...yTicks].sort((a, b) => a - b).map(value => ({ value })); },
-          border: { display: false }, grid: { color: context => context.tick.value === 0 ? "#dce0e2" : "#eff1f2", drawTicks: false },
-          ticks: { autoSkip: false, padding: 10, color: "#949a9e", font: { family: FONT, size: 10 }, callback: value => number.format(Number(value)) },
-        },
+        y: { type: "linear", display: false, min: minimum, max: maximum },
       },
       plugins: {
         legend: { display: false },
@@ -89,12 +81,12 @@ export function AnachronChart({ points }: { points: AnachronStats["curve"] }) {
           padding: 10, cornerRadius: 5, caretSize: 4,
           callbacks: {
             title: items => items.length ? `${date.format(items[0].parsed.x!)} · ${time.format(items[0].parsed.x!)} UTC` : "",
-            label: item => `Normalized P&L  ${number.format(item.parsed.y!)}`,
+            label: () => "",
           },
         },
       },
     };
   }, [points, reducedMotion]);
   return <Line data={data} options={options} plugins={[crosshair]} role="img"
-    aria-label={`Anachron cumulative settled profit on a normalized scale, from ${date.format(points[0].x)} to ${date.format(points[points.length - 1].x)}. Not a percentage return.`} />;
+    aria-label={`Anachron settled profit trend from ${date.format(points[0].x)} to ${date.format(points[points.length - 1].x)}.`} />;
 }

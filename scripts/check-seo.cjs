@@ -77,7 +77,7 @@ for (const route of routes) {
       if (name === 'Anachron') {
         assert.equal(panel.match(/<span class="project-status-badge"[^>]*>(.*?)<\/span>/)?.[1], 'Live');
         assert.equal(list.itemListElement[index].item.creativeWorkStatus, 'Live');
-        for (const label of ['Settled performance', 'Maximum drawdown', 'Sharpe ratio', 'Markets settled', 'normalized scale']) assert.ok(panel.includes(label));
+        for (const label of ['Settled performance', 'Maximum drawdown', 'Sharpe ratio', 'Markets settled']) assert.ok(panel.includes(label));
         assert.ok(!panel.includes('Average daily return') && !panel.includes('research-steps'), 'Anachron must not inherit another strategy’s figures or workflow');
       } else {
         assert.equal(panel.match(/<span class="project-status-badge"[^>]*>(.*?)<\/span>/)?.[1], name === 'Chronallax' ? 'Live' : 'Archived');

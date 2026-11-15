@@ -47,7 +47,6 @@ export function AnachronPerformance({ active }: { active: boolean }) {
           <span>{status === "loading" ? "Loading performance…" : data ? "No settled results yet." : "Performance temporarily unavailable."}</span>
         </div>}
       </div>
-      <p className="anachron-chart-caption">Cumulative settled P&L · normalized scale · UTC</p>
     </figure>
     <dl className="anachron-metrics">
       <div><dt>Maximum drawdown</dt><dd>{data?.maxDrawdown != null ? <>{data.maxDrawdown.toFixed(1)}<span>%</span></> : "—"}</dd></div>
@@ -55,9 +54,7 @@ export function AnachronPerformance({ active }: { active: boolean }) {
       <div><dt>Markets settled</dt><dd>{data ? number.format(data.marketsSettled) : "—"}</dd></div>
     </dl>
     <div className="project-note anachron-note"><p>
-      {data?.venues.length ? <>{data.venues.join(" · ")}<br /></> : null}
       <span role="status">{data ? <>{status === "error" ? "Update unavailable · Last data " : "Data through "}<time dateTime={data.dataThrough}>{datetime.format(new Date(data.dataThrough))} UTC</time> · 1h delay</> : status === "error" ? "Retrying automatically." : "Fetching live statistics…"}</span>
-      {data && data.sharpeRatio === null && <span className="anachron-sharpe-note">{data.sharpeDays < 2 ? "Sharpe available after 2 completed UTC days." : "Sharpe is not available for this sample."}</span>}
     </p></div>
   </div>;
 }
