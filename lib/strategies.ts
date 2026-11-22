@@ -1,5 +1,4 @@
 export const strategies = [
-  { name: "Ballast", status: "Live", category: "Market making", domain: "Event contract market making", description: "A proprietary pricing engine for event contracts that provides maker-side liquidity, combining precise probability modeling with low-latency execution to deliver consistent, risk-controlled returns." },
   { name: "Chronallax", status: "Live", category: "Ultra-high-frequency arbitrage", domain: "Quantitative arbitrage", description: "An ultra-high-frequency spread arbitrage engine that detects pricing inconsistencies across related event contracts and locks in the spread within milliseconds." },
   { name: "Anachron", status: "Live", category: "Market making", domain: "Event contract market making", description: "A market-making engine that identifies systematic mispricing in event contracts and provides liquidity against it." },
   { name: "Echo", status: "Archived", category: "Prediction models", domain: "Prediction markets", description: "An in-house pricing model for prediction markets." },
