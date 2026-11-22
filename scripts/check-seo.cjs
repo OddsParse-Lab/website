@@ -86,7 +86,7 @@ for (const route of routes) {
         assert.ok(panel.includes('An ultra-high-frequency spread arbitrage engine that detects pricing inconsistencies across related event contracts and locks in the spread within milliseconds.'));
         assert.match(panel, /<span class="result-label">Average daily return<\/span>/);
         assert.ok(!panel.includes('21.36'), 'Do not present an old static return as live data');
-        for (const metric of ['39.3', '2.6', '98,408', 'p50', 'Loading performance data', 'Cumulative return', 'peak capital in use']) assert.ok(panel.includes(metric));
+        for (const metric of ['39.3', '2.1', '98,408', 'p50', 'Loading performance data', 'Cumulative return', 'peak capital in use']) assert.ok(panel.includes(metric));
       }
       if (name === 'Parallax') {
         assert.ok(panel.includes('LLMs compare resolution criteria'));
