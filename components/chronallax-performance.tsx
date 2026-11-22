@@ -63,9 +63,8 @@ export function ChronallaxPerformance() {
           {caption && <span className="result-caption">{caption}</span>}
         </div>
         <div>
-          <span className="result-label">Cumulative return</span>
-          <p className="result-number">{data?.cumulativeReturn != null ? <><span className="result-approx">≈</span>{data.cumulativeReturn.toFixed(0)}<span>%</span></> : "—"}</p>
-          {startDate && <span className="result-caption">Since <time dateTime={startDate}>{since}</time> · to date</span>}
+          <span className="result-label">Sharpe ratio</span>
+          <p className="result-number">{data?.sharpeRatio != null ? data.sharpeRatio.toFixed(2) : "—"}</p>
         </div>
       </div>
     </div>
@@ -76,7 +75,7 @@ export function ChronallaxPerformance() {
     </dl>
     <div className="project-note" aria-live="polite"><p>
       Daily return is based on realized profit relative to peak capital in use that day.<br />
-      <span>{status === "error"
+      <span>{startDate && <>Since <time dateTime={startDate}>{since}</time> · </>}{status === "error"
         ? data ? `Update unavailable · Last data ${updated} UTC` : "Unable to load live returns. Retrying automatically."
         : data ? <>Updated <time dateTime={data.updatedAt}>{updated} UTC</time></> : "Fetching live returns…"}</span>
     </p></div>

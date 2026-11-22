@@ -2,6 +2,7 @@ export const ARB_PROFIT_URL = "https://echo.oddsparse.trade/api/arb-profit";
 
 export type ArbPerformance = {
   averageDailyReturn: number | null;
+  sharpeRatio: number | null;
   cumulativeReturn: number | null;
   completedDays: number;
   startDate: string | null;
@@ -32,8 +33,18 @@ export function parseArbProfit(value: unknown): ArbPerformance {
     return day as Day;
   }).sort((a, b) => a.date.localeCompare(b.date));
   const completed = days.filter(day => day.complete);
+  const sharpeRatio = payload.sharpe_ratio;
+  const sharpeDays = payload.sharpe_days;
+  if (sharpeDays != null && (typeof sharpeDays !== "number" || !Number.isSafeInteger(sharpeDays) || sharpeDays < 0)) {
+    throw new Error("Invalid Sharpe reporting period");
+  }
+  if (sharpeRatio != null && (typeof sharpeRatio !== "number" || !Number.isFinite(sharpeRatio) || sharpeDays == null)) {
+    throw new Error("Invalid Sharpe ratio");
+  }
   return {
     averageDailyReturn: completed.length ? completed.reduce((sum, day) => sum + day.daily_return_pct / completed.length, 0) : null,
+    // The API owns Sharpe's return basis and annualization; do not derive it from the displayed daily mean.
+    sharpeRatio: typeof sharpeRatio === "number" && typeof sharpeDays === "number" && sharpeDays >= 2 ? sharpeRatio : null,
     cumulativeReturn: days.length ? days[days.length - 1].cumulative_return_pct : null,
     completedDays: completed.length,
     startDate: days.length ? days[0].date : null,

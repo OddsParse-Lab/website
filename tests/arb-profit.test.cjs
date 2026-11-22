@@ -90,3 +90,29 @@ test('uses the API cumulative field without substituting a compounded or average
   assert.equal(result.cumulativeReturn, 112.17);
   assert.equal(result.startDate, '2026-10-04');
 });
+
+
+test('uses reported Sharpe without recomputing it from daily deployed-capital returns', () => {
+  const result = load().parseArbProfit({ ...example, sharpe_ratio: 17.36, sharpe_days: 2 });
+  assert.equal(result.sharpeRatio, 17.36);
+  assert.equal(result.averageDailyReturn.toFixed(2), '20.90');
+  for (const ratio of [0, -1.23]) {
+    assert.equal(load().parseArbProfit({ ...example, sharpe_ratio: ratio, sharpe_days: 2 }).sharpeRatio, ratio);
+  }
+});
+
+test('missing Sharpe or too few completed days show unavailable while preserving daily returns', () => {
+  for (const fields of [{}, { sharpe_ratio: null, sharpe_days: 2 }, { sharpe_ratio: 17.36, sharpe_days: 1 }]) {
+    const result = load().parseArbProfit({ ...example, ...fields });
+    assert.equal(result.sharpeRatio, null);
+    assert.equal(result.averageDailyReturn.toFixed(2), '20.90');
+  }
+});
+
+test('rejects malformed Sharpe values and sample counts', () => {
+  for (const fields of [
+    { sharpe_ratio: '17.36', sharpe_days: 2 }, { sharpe_ratio: Infinity, sharpe_days: 2 },
+    { sharpe_ratio: NaN, sharpe_days: 2 }, { sharpe_ratio: 17.36 },
+    { sharpe_ratio: 17.36, sharpe_days: -1 }, { sharpe_ratio: 17.36, sharpe_days: 1.5 },
+  ]) assert.throws(() => load().parseArbProfit({ ...example, ...fields }));
+});
