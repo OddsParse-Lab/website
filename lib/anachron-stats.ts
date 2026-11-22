@@ -46,12 +46,22 @@ export function parseAnachronStats(value: unknown): AnachronStats {
     if (!entry || typeof entry !== "object") throw new Error("Invalid curve point");
     const point = entry as Record<string, unknown>;
     const x = Date.parse(timestamp(point.t)), y = number(point.value);
-    if (dates.has(x) || x > Date.parse(dataThrough) || x < Date.parse(data.live_since as string) || Math.abs(y) > 100.001) {
+    if (dates.has(x) || x > Date.parse(updatedAt) || x < Date.parse(data.live_since as string) || Math.abs(y) > 100.001) {
       throw new Error("Invalid curve point");
     }
     dates.add(x);
     return { x, y };
   }).sort((a, b) => a.x - b.x);
+  // The feed may pad an inactive period with the last settled value. Keep the
+  // published settlement cutoff, and reject new values beyond that cutoff.
+  const paddingStart = curve.findIndex(point => point.x > Date.parse(dataThrough));
+  if (paddingStart !== -1) {
+    const lastSettled = curve[paddingStart - 1];
+    if (!lastSettled || curve.slice(paddingStart).some(point => point.y !== lastSettled.y)) {
+      throw new Error("Invalid curve point");
+    }
+    curve.splice(paddingStart);
+  }
   const maxDrawdown = data.max_drawdown_pct === null ? null : number(data.max_drawdown_pct);
   if (maxDrawdown !== null && (maxDrawdown < 0 || maxDrawdown > 100)) throw new Error("Invalid drawdown");
   const sharpeDays = count(data.sharpe_days);

@@ -59,6 +59,18 @@ test('rejects invalid or duplicated points, future samples, and malformed metric
   }
 });
 
+test('trims unchanged padding after the settlement cutoff without accepting unreported results', () => {
+  const api = load();
+  const padded = { ...sample, updated_at: '2026-11-16T01:00:00Z', curve: [...sample.curve, point(21, 100), point(22, 100)] };
+  const result = api.parseAnachronStats(padded);
+  assert.equal(result.curve.length, 3);
+  assert.equal(result.curve.at(-1).x, Date.parse(sample.data_through));
+  assert.equal(result.curve.at(-1).y, 100);
+  assert.equal(result.dataThrough, sample.data_through);
+  assert.throws(() => api.parseAnachronStats({ ...padded, curve: [...sample.curve, point(21, 99)] }));
+  assert.throws(() => api.parseAnachronStats({ ...padded, curve: [point(21, 100)] }));
+});
+
 test('fetch passes abort signal without credentials or caching and rejects HTTP/JSON failures', async () => {
   const signal = new AbortController().signal;
   const api = load(async (url, options) => {

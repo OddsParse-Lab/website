@@ -62,8 +62,8 @@ for (const route of routes) {
     assert.equal(nodes.find(node => node['@type'] === 'CollectionPage').mainEntity['@id'], base + '/strategies/#strategies');
     const strategyLink = [...nav.matchAll(/<a\b[^>]*>/g)].map(match => attributes(match[0])).find(link => link.href === '/strategies/');
     assert.equal(strategyLink?.['aria-current'], 'page');
-    const names = ['Anachron', 'Chronallax', 'Echo', 'Heimdall', 'Parallax'];
-    const details = ['A market-making engine that identifies systematic mispricing in event contracts and provides liquidity against it.', 'Average daily return', 'Development-stage result', 'Time-decayed information weighting.', 'Embedding models shortlist markets with similar underlying questions.'];
+    const names = ['Ballast', 'Chronallax', 'Anachron', 'Echo', 'Heimdall', 'Parallax'];
+    const details = ['A proprietary pricing engine for event contracts', 'Average daily return', 'A market-making engine that identifies systematic mispricing in event contracts and provides liquidity against it.', 'Development-stage result', 'Time-decayed information weighting.', 'Embedding models shortlist markets with similar underlying questions.'];
     const list = nodes.find(node => node['@type'] === 'ItemList');
     assert.deepEqual(list.itemListElement.map(entry => entry.item.name), names);
     assert.equal(list.numberOfItems, names.length);
@@ -80,7 +80,13 @@ for (const route of routes) {
         for (const label of ['Settled performance', 'Maximum drawdown', 'Sharpe ratio', 'Markets settled']) assert.ok(panel.includes(label));
         assert.ok(!panel.includes('Average daily return') && !panel.includes('research-steps'), 'Anachron must not inherit another strategy’s figures or workflow');
       } else {
-        assert.equal(panel.match(/<span class="project-status-badge"[^>]*>(.*?)<\/span>/)?.[1], name === 'Chronallax' ? 'Live' : 'Archived');
+        assert.equal(panel.match(/<span class="project-status-badge"[^>]*>(.*?)<\/span>/)?.[1], ['Ballast', 'Chronallax'].includes(name) ? 'Live' : 'Archived');
+      }
+      if (name === 'Ballast') {
+        for (const label of ['Average daily return', 'Sharpe ratio', 'Decision latency · p50', 'Contracts traded']) assert.ok(panel.includes(label));
+        assert.equal(list.itemListElement[index].item.creativeWorkStatus, 'Live');
+        assert.ok(!panel.includes('Cumulative return') && !panel.includes('<canvas') && !panel.includes('anachron-chart'));
+        assert.ok(panel.includes('Fetching live statistics'), 'No stale hardcoded metrics in the export');
       }
       if (name === 'Chronallax') {
         assert.ok(panel.includes('An ultra-high-frequency spread arbitrage engine that detects pricing inconsistencies across related event contracts and locks in the spread within milliseconds.'));

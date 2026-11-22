@@ -7,8 +7,10 @@ import { wheelAppearance, wheelDistance } from "@/lib/strategy-wheel";
 import { strategies } from "@/lib/strategies";
 import { ChronallaxPerformance } from "./chronallax-performance";
 import { AnachronPerformance } from "./anachron-performance";
+import { BallastPerformance } from "./ballast-performance";
 
 function StrategyDetails({ name, active }: { name: (typeof strategies)[number]["name"]; active: boolean }) {
+  if (name === "Ballast") return <BallastPerformance />;
   if (name === "Anachron") return <AnachronPerformance active={active} />;
   if (name === "Chronallax") return <ChronallaxPerformance />;
 
